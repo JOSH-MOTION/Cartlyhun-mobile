@@ -118,6 +118,10 @@ export const incrementProductViews = async (productId) => {
     });
     return true;
   } catch (error) {
+    if (error.code === 'permission-denied') {
+      // Silently fail if rules don't allow direct increment from client
+      return false;
+    }
     console.error('Error incrementing product views:', error);
     return false;
   }

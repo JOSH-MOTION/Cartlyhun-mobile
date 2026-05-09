@@ -6,8 +6,29 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#000000", // Placeholder, adjust if needed
-        secondary: "#ffffff",
+        primary: "#fa8929", // Brand Orange (Yellow)
+        secondary: "#442efb", // Brand Indigo
+        background: "#ffffff", // Light Background
+        surface: "#f8fafc", // Light Surface for cards
+        "primary-fg": "#ffffff", // Text on primary
+        accent: "#fa8929",
+        muted: "#64748b",
+        green: {
+          500: '#fa8929',
+        },
+        emerald: {
+          500: '#fa8929',
+        },
+        orange: {
+          500: '#fa8929',
+        },
+        indigo: {
+          500: '#442efb',
+        },
+      },
+      borderRadius: {
+        '4xl': '2rem',
+        '5xl': '2.5rem',
       },
     },
   },
