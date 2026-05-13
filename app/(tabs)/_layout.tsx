@@ -2,9 +2,12 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { BlurView } from 'expo-blur';
 import { View, StyleSheet, Platform } from 'react-native';
-import { LucideHome, LucideShoppingCart, LucideUser, LucidePlusCircle, LucideSearch, LucideHeart } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LucideHome, LucideMessageCircle, LucideUser, LucidePlusCircle, LucideSearch, LucideHeart } from 'lucide-react-native';
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+  
   return (
     <Tabs
       screenOptions={{
@@ -15,8 +18,8 @@ export default function TabLayout() {
           position: 'absolute',
           borderTopWidth: 0,
           elevation: 0,
-          height: 85,
-          paddingBottom: 25,
+          height: Platform.OS === 'ios' ? 85 : 60 + insets.bottom,
+          paddingBottom: Platform.OS === 'ios' ? 25 : insets.bottom + 5,
           backgroundColor: '#ffffff',
           borderTopLeftRadius: 35,
           borderTopRightRadius: 35,
@@ -29,6 +32,7 @@ export default function TabLayout() {
           <BlurView intensity={20} tint="light" style={StyleSheet.absoluteFill} />
         ),
       }}>
+
       <Tabs.Screen
         name="index"
         options={{
@@ -48,10 +52,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="cart"
+        name="messages"
         options={{
-          title: 'Cart',
-          tabBarIcon: ({ color }) => <LucideShoppingCart size={24} color={color} />,
+          title: 'Messages',
+          tabBarIcon: ({ color }) => <LucideMessageCircle size={24} color={color} />,
         }}
       />
       <Tabs.Screen

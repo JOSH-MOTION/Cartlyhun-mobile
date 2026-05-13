@@ -3,6 +3,7 @@ import { View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator, Style
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProducts } from '@/hooks/useProducts';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   LucideSearch,
   LucideBell,
@@ -28,6 +29,8 @@ import {
   LucideHome,
   LucideHeart,
   LucidePlus,
+  LucideSun,
+  LucideMoon,
   LucideMessageSquare,
   LucideUser,
   LucideSettings,
@@ -65,6 +68,7 @@ import {
   LucideBuilding
 } from 'lucide-react-native';
 import { BlurView } from 'expo-blur';
+import { useColorScheme } from 'nativewind';
 import useWishlist from '@/store/useWishlist';
 import { useAuth } from '@/hooks/useAuth';
 import { categories as APP_CATEGORIES } from '@/utils/categories';
@@ -120,6 +124,7 @@ const ICON_MAP: Record<string, any> = {
 };
 
 export default function HomeScreen() {
+  const isDark = false;
   const { data: products, isLoading, refetch } = useProducts();
   const [refreshing, setRefreshing] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
@@ -171,35 +176,41 @@ export default function HomeScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-background">
+      <SafeAreaView className="flex-1 justify-center items-center bg-white dark:bg-slate-950">
         <ActivityIndicator size="large" color="#fa8929" />
       </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-background">
-      <SafeAreaView edges={['top']} className="bg-background">
+    <View className="flex-1 bg-white dark:bg-slate-950">
+      <SafeAreaView edges={['top']} className="bg-white dark:bg-slate-950">
         {/* Real Data Header */}
         <View className="px-6 pt-4">
           <View className="flex-row justify-between items-center mb-8">
             <View className="flex-row items-center">
               <View className="relative">
-                <Image
-                  source={{ uri: profile?.photoURL || user?.photoURL || 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=100&auto=format&fit=crop' }}
-                  className="w-12 h-12 rounded-full border border-white/10 bg-surface"
-                />
+                {profile?.photoURL || user?.photoURL ? (
+                  <Image
+                    source={{ uri: profile?.photoURL || user?.photoURL }}
+                    className="w-12 h-12 rounded-full border border-white/10 bg-surface"
+                  />
+                ) : (
+                  <View className="w-12 h-12 rounded-full border border-gray-100 bg-gray-50 items-center justify-center">
+                    <LucideUser size={24} color="#fa8929" />
+                  </View>
+                )}
                 <View className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-primary rounded-full border-2 border-background" />
               </View>
               <View className="ml-3">
-                <Text className="text-gray-500 text-sm font-medium">{getGreeting()}, 👋</Text>
-                <Text className="text-gray-900 text-xl font-black">{profile?.name || user?.displayName || 'Welcome!'}</Text>
+                <Text className="text-gray-500 dark:text-gray-400 text-sm font-medium">{getGreeting()}, 👋</Text>
+                <Text className="text-gray-900 dark:text-white text-xl font-black">{profile?.name || user?.displayName || 'Welcome!'}</Text>
               </View>
             </View>
             <View className="flex-row items-center">
               <TouchableOpacity onPress={() => setNotificationsVisible(true)} className="relative p-2 mr-1">
                 <LucideBell size={26} color="#000" />
-                <View className="absolute top-2.5 right-2.5 w-3 h-3 bg-primary rounded-full border-2 border-background" />
+                <View className="absolute top-2.5 right-2.5 w-3 h-3 bg-primary rounded-full border-2 border-white" />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => router.push('/(tabs)/wishlist')} className="p-2">
                 <LucideHeart size={26} color="#000" />
@@ -208,9 +219,9 @@ export default function HomeScreen() {
           </View>
 
           {/* Search and Filter */}
-          <View className="flex-row items-center gap-3 mb-8">
+          <View className="flex-row items-center mb-8">
             <View
-              className="flex-1 flex-row items-center bg-surface h-14 px-4 rounded-3xl border border-gray-100 shadow-sm"
+              className="flex-1 flex-row items-center bg-gray-50 h-14 px-4 rounded-3xl border border-gray-100 shadow-sm"
             >
               <LucideSearch size={20} color="#64748b" />
               <TextInput 
@@ -221,18 +232,18 @@ export default function HomeScreen() {
                 onChangeText={setSearchQuery}
                 autoCorrect={false}
               />
-              {searchQuery.length > 0 && (
-                <TouchableOpacity onPress={() => setSearchQuery('')}>
-                  <LucideX size={18} color="#94a3b8" />
+              <View className="flex-row items-center gap-3">
+                {searchQuery.length > 0 && (
+                  <TouchableOpacity onPress={() => setSearchQuery('')} className="p-1">
+                    <LucideX size={18} color="#94a3b8" />
+                  </TouchableOpacity>
+                )}
+                <View className="w-[1px] h-6 bg-gray-200 mx-1" />
+                <TouchableOpacity onPress={() => setFilterVisible(true)} className="p-1">
+                  <LucideSlidersHorizontal size={20} color="#000" />
                 </TouchableOpacity>
-              )}
+              </View>
             </View>
-            <TouchableOpacity 
-              onPress={() => setFilterVisible(true)}
-              className="w-14 h-14 bg-surface items-center justify-center rounded-2xl border border-gray-100"
-            >
-              <LucideSlidersHorizontal size={22} color="#000" />
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -339,41 +350,41 @@ export default function HomeScreen() {
         )}
         renderItem={({ item }) => (
           <TouchableOpacity
-            className="bg-surface rounded-[32px] mb-6 w-[48%] shadow-2xl overflow-hidden border border-white/5"
-            activeOpacity={0.8}
+            className="bg-white rounded-[24px] mb-5 w-[48%] overflow-hidden border border-gray-100 shadow-sm"
+            activeOpacity={0.9}
             onPress={() => router.push(`/product/${item.id}`)}
           >
             <View className="relative">
               <Image
                 source={{ uri: item.images?.[0] || 'https://via.placeholder.com/200' }}
-                className="w-full h-56"
+                className="w-full h-44"
                 resizeMode="cover"
               />
-              <View className="absolute top-3 right-3 px-3 py-1.5 bg-background/90 rounded-full border border-primary/30 shadow-lg">
-                <Text className="text-primary text-sm font-black">₵{item.basePrice || item.price}</Text>
-              </View>
               <TouchableOpacity
                 onPress={() => toggleWishlist(item.id)}
-                className="absolute top-3 left-3 p-2 bg-black/60 rounded-full"
+                className="absolute top-2.5 right-2.5 p-2 bg-white/90 rounded-full"
               >
-                <LucideHeart size={16} color={isInWishlist(item.id) ? '#fa8929' : '#000'} fill={isInWishlist(item.id) ? '#fa8929' : 'transparent'} />
+                <LucideHeart 
+                  size={14} 
+                  color={isInWishlist(item.id) ? '#fa8929' : '#000'} 
+                  fill={isInWishlist(item.id) ? '#fa8929' : 'transparent'} 
+                />
               </TouchableOpacity>
             </View>
-            <View className="p-4">
-              <Text className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">
-                {item.category}
-              </Text>
-              <Text className="text-sm font-bold text-gray-900 mb-2" numberOfLines={1}>
+
+            <View className="p-3">
+              <Text className="text-[13px] font-bold text-gray-900 mb-0.5" numberOfLines={1}>
                 {item.name}
               </Text>
-              <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center">
-                  <LucideMapPin size={12} color="#94a3b8" />
-                  <Text className="text-[10px] text-slate-400 font-bold ml-1">{item.location || 'Accra, GH'}</Text>
-                </View>
-                <TouchableOpacity className="bg-white/5 p-2 rounded-full border border-white/10">
-                  <LucidePlusCircle size={14} color="#fa8929" />
-                </TouchableOpacity>
+              <Text className="text-primary font-black text-[13px] mb-1.5">
+                ₵{item.basePrice || item.price}
+              </Text>
+              
+              <View className="flex-row items-center">
+                <LucideMapPin size={10} color="#94a3b8" />
+                <Text className="text-[9px] text-gray-400 font-bold ml-1 uppercase" numberOfLines={1}>
+                  {item.location || 'Accra'}
+                </Text>
               </View>
             </View>
           </TouchableOpacity>
@@ -387,11 +398,11 @@ export default function HomeScreen() {
         onRequestClose={() => setNotificationsVisible(false)}
       >
         <View className="flex-1 bg-black/60 items-center justify-center p-6">
-          <View className="bg-surface w-full rounded-[40px] border border-white/10 p-8">
+          <View className="bg-white dark:bg-slate-900 w-full rounded-[40px] border border-gray-100 dark:border-slate-800 p-8">
             <View className="flex-row justify-between items-center mb-6">
-              <Text className="text-2xl font-black text-gray-900">Alerts</Text>
+              <Text className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Alerts</Text>
               <TouchableOpacity onPress={() => setNotificationsVisible(false)}>
-                <LucideX size={24} color="#000" />
+                <LucideX size={24} color={isDark ? "#fff" : "#000"} />
               </TouchableOpacity>
             </View>
             
@@ -399,15 +410,15 @@ export default function HomeScreen() {
               <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-4">
                 <LucideBell size={40} color="#fa8929" />
               </View>
-              <Text className="text-gray-900 text-lg font-bold mb-2">No New Alerts</Text>
-              <Text className="text-slate-400 text-center">We'll notify you when your items sell or prices drop.</Text>
+              <Text className="text-gray-900 dark:text-white text-lg font-bold mb-2 uppercase tracking-tight">No New Alerts</Text>
+              <Text className="text-gray-400 dark:text-gray-500 text-center font-medium">We'll notify you when your items sell or prices drop.</Text>
             </View>
 
             <TouchableOpacity 
               onPress={() => setNotificationsVisible(false)}
               className="bg-primary h-14 rounded-2xl items-center justify-center"
             >
-              <Text className="text-background font-bold uppercase tracking-widest">Got it</Text>
+              <Text className="text-white font-black uppercase tracking-widest text-xs">Got it</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -420,20 +431,27 @@ export default function HomeScreen() {
         visible={filterVisible}
         onRequestClose={() => setFilterVisible(false)}
       >
-        <View className="flex-1 bg-black/80 justify-end">
-          <View className="bg-white rounded-t-[40px] h-[85%] border-t border-gray-100 p-6">
+        <TouchableOpacity 
+          activeOpacity={1} 
+          className="flex-1 bg-black/80 justify-end"
+          onPress={() => setFilterVisible(false)}
+        >
+          <View 
+            className="bg-white rounded-t-[40px] h-[85%] border-t border-gray-100 p-6"
+            onTouchStart={(e) => e.stopPropagation()}
+          >
             <View className="w-12 h-1.5 bg-gray-100 rounded-full self-center mb-6" />
             
             <View className="flex-row justify-between items-center mb-8">
               <View>
-                <Text className="text-3xl font-black text-gray-900">Marketplace</Text>
-                <Text className="text-gray-500 font-bold">Refine your search</Text>
+                <Text className="text-3xl font-black text-gray-900 uppercase tracking-tighter">Marketplace</Text>
+                <Text className="text-gray-500 font-bold uppercase text-[10px] tracking-widest mt-1">Refine your search</Text>
               </View>
               <TouchableOpacity 
                 onPress={() => setFilterVisible(false)}
-                className="w-12 h-12 bg-white/5 rounded-full items-center justify-center border border-white/10"
+                className="w-12 h-12 bg-gray-100 rounded-full items-center justify-center border border-gray-200"
               >
-                <LucideX size={24} color="#fff" />
+                <LucideX size={24} color="#000" />
               </TouchableOpacity>
             </View>
 
@@ -441,7 +459,7 @@ export default function HomeScreen() {
             
             <ScrollView showsVerticalScrollIndicator={false}>
               <View className="flex-row flex-wrap justify-between">
-                  <TouchableOpacity
+                <TouchableOpacity
                   onPress={() => { setActiveCategory('all'); setFilterVisible(false); }}
                   className={`w-[48%] mb-4 p-4 rounded-3xl flex-row items-center border ${activeCategory === 'all' ? 'bg-[#fa8929] border-[#fa8929]' : 'bg-gray-50 border-gray-100'}`}
                 >
@@ -479,13 +497,13 @@ export default function HomeScreen() {
             <View className="absolute bottom-10 left-6 right-6">
               <TouchableOpacity 
                 onPress={() => { setActiveCategory('all'); setFilterVisible(false); }}
-                className="bg-white/5 h-16 rounded-3xl items-center justify-center border border-white/10 shadow-lg"
+                className="bg-blue-600 h-16 rounded-3xl items-center justify-center shadow-lg shadow-blue-600/20"
               >
-                <Text className="text-gray-900 font-black uppercase tracking-widest">Clear All Filters</Text>
+                <Text className="text-white font-black uppercase tracking-widest">Clear All Filters</Text>
               </TouchableOpacity>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </Modal>
     </View>
   );

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, StyleSheet, FlatList, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { getProducts, getSeller, incrementProductViews } from '@/utils/firebaseData';
 import { getTimeAgo, getTimeOnPlatform } from '@/utils/helpers';
-import useCart from '@/store/useCart';
 import { 
   LucideChevronLeft, 
   LucideShoppingBag, 
@@ -20,24 +20,28 @@ import {
   LucidePhone,
   LucidePhoneCall,
   LucideMessageCircle,
+  LucideMessageSquare,
   LucidePlusCircle
 } from 'lucide-react-native';
 import { BlurView } from 'expo-blur';
+import { useColorScheme } from 'nativewind';
 import useWishlist from '@/store/useWishlist';
+import { useAuth } from '@/hooks/useAuth';
+import { chatService } from '@/services/chatService';
 
 const { width } = Dimensions.get('window');
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const addItem = useCart((state) => state.addItem);
+  const { user, profile } = useAuth();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const [activeImage, setActiveImage] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
 
   useEffect(() => {
-    if (id) {
+    if (id && id !== '[id]') {
       incrementProductViews(id as string);
     }
   }, [id]);
@@ -62,7 +66,7 @@ export default function ProductDetailScreen() {
 
   if (productsLoading || !product) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-white">
+      <SafeAreaView className="flex-1 justify-center items-center bg-white dark:bg-slate-950">
         <ActivityIndicator size="large" color="#fa8929" />
       </SafeAreaView>
     );
@@ -76,20 +80,42 @@ export default function ProductDetailScreen() {
     Linking.openURL(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`);
   };
 
-  const handleAddToCart = () => {
-    const variant = product.variants?.[0] || { id: 'default', price: price };
-    addItem(product, variant, 1);
-    router.push('/(tabs)/cart');
+  const handleMessageSeller = async () => {
+    if (!user) {
+      router.push('/auth/signin');
+      return;
+    }
+
+    if (!product.sellerId) {
+      alert('This product does not have a registered seller.');
+      return;
+    }
+
+    if (user.uid === product.sellerId) {
+      alert('You cannot chat with yourself.');
+      return;
+    }
+
+    try {
+      const convId = await chatService.getOrCreateConversation(
+        { uid: user.uid, name: profile?.name || user.displayName || 'Me', photoURL: profile?.photoURL || user.photoURL || '' },
+        { uid: product.sellerId, name: product.sellerName || 'Seller', photoURL: sellerInfo?.photoURL || '' }
+      );
+      router.push(`/chat/${convId}`);
+    } catch (error) {
+      console.error('Error creating conversation:', error);
+      alert('Failed to start chat.');
+    }
   };
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-white dark:bg-slate-950">
       {/* Custom Floating Header */}
       <SafeAreaView className="absolute top-0 left-0 right-0 z-10">
         <View className="px-6 py-2 flex-row justify-between items-center">
           <TouchableOpacity 
             onPress={() => router.back()}
-            className="p-3 bg-background/80 rounded-2xl border border-white/10"
+            className="p-3 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-gray-100 dark:border-slate-800"
           >
             <LucideChevronLeft size={24} color="#fa8929" />
           </TouchableOpacity>
@@ -138,8 +164,8 @@ export default function ProductDetailScreen() {
           </View>
         </View>
         
-        <View className="bg-white -mt-10 rounded-t-[40px] px-6 pt-8 pb-40 border-t border-gray-100">
-          <View className="w-12 h-1 bg-gray-100 rounded-full mx-auto mb-6" />
+        <View className="bg-white -mt-10 rounded-t-[40px] px-6 pt-8 pb-10 border-t border-gray-100">
+          <View className="w-12 h-1 bg-gray-100 dark:bg-slate-800 rounded-full mx-auto mb-6" />
           
           {/* Header Info */}
           <View className="flex-row justify-between items-start mb-4">
@@ -147,24 +173,24 @@ export default function ProductDetailScreen() {
               <Text className="text-primary font-black uppercase tracking-[2px] text-[10px] mb-2">
                 {product.category_name || product.category}
               </Text>
-              <Text className="text-3xl font-black text-white leading-tight">
+              <Text className="text-3xl font-black text-gray-900 dark:text-white leading-tight uppercase tracking-tighter">
                 {product.name}
               </Text>
             </View>
-            <View className="bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100">
+            <View className="bg-gray-50 dark:bg-slate-800 px-4 py-2 rounded-2xl border border-gray-100 dark:border-slate-800">
               <Text className="text-2xl font-black text-primary">₵{price}</Text>
             </View>
           </View>
 
           {/* Stats Bar */}
-          <View className="flex-row items-center gap-4 mb-8 border-b border-gray-100 pb-6">
+          <View className="flex-row items-center gap-4 mb-8 border-b border-gray-100 dark:border-slate-800 pb-6">
             <View className="flex-row items-center">
               <LucideEye size={14} color="#64748b" />
-              <Text className="ml-1 text-[10px] font-bold text-gray-500 uppercase">{product.views || 0} Views</Text>
+              <Text className="ml-1 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase">{product.views || 0} Views</Text>
             </View>
             <View className="flex-row items-center">
               <LucideMapPin size={14} color="#64748b" />
-              <Text className="ml-1 text-[10px] font-bold text-gray-500 uppercase">{product.location || "Accra"}</Text>
+              <Text className="ml-1 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase">{product.location || "Accra"}</Text>
             </View>
             <View className="flex-row items-center ml-auto">
               <LucideZap size={14} color="#fa8929" />
@@ -172,40 +198,38 @@ export default function ProductDetailScreen() {
             </View>
           </View>
 
-          {/* Attributes Grid */}
           <View className="flex-row flex-wrap gap-y-4 mb-10">
             {product.condition && (
               <View className="w-1/2 pr-2">
-                <Text className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Condition</Text>
-                <Text className="text-xs font-bold text-gray-900">{product.condition}</Text>
+                <Text className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">Condition</Text>
+                <Text className="text-xs font-bold text-gray-900 dark:text-white uppercase">{product.condition}</Text>
               </View>
             )}
             {product.brand && (
               <View className="w-1/2 pl-2">
-                <Text className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Brand</Text>
-                <Text className="text-xs font-bold text-gray-900">{product.brand}</Text>
+                <Text className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">Brand</Text>
+                <Text className="text-xs font-bold text-gray-900 dark:text-white uppercase">{product.brand}</Text>
               </View>
             )}
             {product.gender && (
               <View className="w-1/2 pr-2">
-                <Text className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Gender</Text>
-                <Text className="text-xs font-bold text-gray-900">{product.gender}</Text>
+                <Text className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">Gender</Text>
+                <Text className="text-xs font-bold text-gray-900 dark:text-white uppercase">{product.gender}</Text>
               </View>
             )}
             {product.material && (
               <View className="w-1/2 pl-2">
-                <Text className="text-[9px] font-black text-gray-500 uppercase tracking-widest mb-1">Material</Text>
-                <Text className="text-xs font-bold text-gray-900">{product.material}</Text>
+                <Text className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">Material</Text>
+                <Text className="text-xs font-bold text-gray-900 dark:text-white uppercase">{product.material}</Text>
               </View>
             )}
           </View>
 
-          {/* Description */}
           <View className="mb-10">
             <Text className="text-[10px] font-black text-primary uppercase tracking-[2px] mb-4">Product Insight</Text>
             <Text 
               numberOfLines={isExpanded ? undefined : 4}
-              className="text-gray-600 text-[15px] leading-7 font-medium"
+              className="text-gray-600 dark:text-gray-400 text-[15px] leading-7 font-medium"
             >
               {product.description || "No description available for this premium piece."}
             </Text>
@@ -217,39 +241,67 @@ export default function ProductDetailScreen() {
           </View>
 
           {/* Seller Profile Card */}
-          <View className="bg-gray-50 p-6 rounded-[32px] border border-gray-100 mb-8">
+          <View className="bg-gray-50 dark:bg-slate-800 p-6 rounded-[32px] border border-gray-100 dark:border-slate-800 mb-8">
             <View className="flex-row items-center mb-6">
               <View className="w-14 h-14 bg-primary rounded-2xl items-center justify-center mr-4">
-                <Text className="text-background font-black text-xl">{product.sellerName?.charAt(0).toUpperCase() || 'C'}</Text>
+                <Text className="text-white font-black text-xl">{product.sellerName?.charAt(0).toUpperCase() || 'C'}</Text>
               </View>
               <View className="flex-1">
-                <Text className="text-gray-900 font-black text-lg">{product.sellerName || "CartlyHub Official"}</Text>
+                <Text className="text-gray-900 dark:text-white font-black text-lg uppercase tracking-tight">{product.sellerName || "CartlyHub Official"}</Text>
                 <Text className="text-primary text-[10px] font-bold uppercase">{getTimeOnPlatform(sellerInfo?.createdAt)}</Text>
                 <View className="flex-row items-center mt-1">
                   {[1, 2, 3, 4, 5].map(s => <LucideStar key={s} size={10} color="#fa8929" fill="#fa8929" />)}
-                  <Text className="ml-1 text-[10px] text-gray-500 font-bold">({sellerInfo?.reviewCount || 0})</Text>
+                  <Text className="ml-1 text-[10px] text-gray-500 dark:text-gray-400 font-bold">({sellerInfo?.reviewCount || 0})</Text>
                 </View>
               </View>
             </View>
             
-            <View className="flex-row gap-3">
+            <View className="flex-row gap-3 mb-3">
               <TouchableOpacity 
-                onPress={() => setShowPhone(!showPhone)}
-                className="flex-1 bg-gray-100 h-12 rounded-xl flex-row items-center justify-center border border-gray-200"
+                onPress={handleWhatsAppOrder}
+                className="flex-1 bg-green-500 h-12 rounded-xl flex-row items-center justify-center shadow-sm shadow-green-500/20"
               >
-                <LucidePhone size={14} color="#000" />
-                <Text className="text-gray-900 font-bold text-xs ml-2">{showPhone ? (product.sellerPhone || "N/A") : "SHOW CONTACT"}</Text>
+                <FontAwesome name="whatsapp" size={18} color="#ffffff" />
+                <Text className="text-white font-black text-[10px] ml-2 uppercase tracking-wider">WhatsApp</Text>
               </TouchableOpacity>
-              <TouchableOpacity className="flex-1 bg-primary h-12 rounded-xl flex-row items-center justify-center">
-                <LucideMessageCircle size={14} color="#ffffff" />
-                <Text className="text-background font-bold text-xs ml-2 uppercase">MESSAGE</Text>
+              
+              <TouchableOpacity 
+                onPress={handleMessageSeller}
+                className="flex-1 bg-primary h-12 rounded-xl flex-row items-center justify-center shadow-sm shadow-primary/20"
+              >
+                <LucideMessageSquare size={14} color="#ffffff" />
+                <Text className="text-white font-black text-[10px] ml-2 uppercase tracking-wider">Internal Chat</Text>
               </TouchableOpacity>
             </View>
+
+            <TouchableOpacity 
+              onPress={() => {
+                if (showPhone) {
+                  Linking.openURL(`tel:${product.sellerPhone || "233242403450"}`);
+                } else {
+                  setShowPhone(true);
+                }
+              }}
+              className={`w-full ${showPhone ? 'bg-primary' : 'bg-gray-100'} h-12 rounded-xl flex-row items-center justify-center border ${showPhone ? 'border-primary' : 'border-gray-200'}`}
+            >
+              {showPhone ? (
+                <View className="flex-row items-center">
+                  <LucidePhoneCall size={16} color="#fff" />
+                  <Text className="text-white font-black text-[10px] ml-2 uppercase tracking-wider">
+                    CALL: {product.sellerPhone || "233 24 240 3450"}
+                  </Text>
+                </View>
+              ) : (
+                <View className="flex-row items-center">
+                  <LucidePhone size={14} color="#000" />
+                  <Text className="text-gray-900 font-black text-[10px] ml-2 uppercase tracking-wider">Show Contact</Text>
+                </View>
+              )}
+            </TouchableOpacity>
           </View>
 
-          {/* Safety Tips */}
           <View className="bg-primary/5 p-6 rounded-[32px] border border-primary/20 mb-12">
-            <Text className="text-primary font-black text-[10px] uppercase tracking-widest mb-4">Safety Tips</Text>
+            <Text className="text-primary font-black text-[10px] uppercase tracking-widest mb-4 text-center">Safety Protocol</Text>
             <View className="gap-y-3">
               {[
                 "Inspect the item before paying",
@@ -257,8 +309,8 @@ export default function ProductDetailScreen() {
                 "Don't pay in advance (delivery included)"
               ].map((tip, i) => (
                 <View key={i} className="flex-row items-center">
-                  <View className="w-1 h-1 bg-primary/40 rounded-full mr-3" />
-                  <Text className="text-gray-600 text-[11px] font-bold uppercase">{tip}</Text>
+                  <View className="w-1.5 h-1.5 bg-primary/40 rounded-full mr-4" />
+                  <Text className="text-gray-600 dark:text-gray-400 text-[10px] font-black uppercase tracking-tight">{tip}</Text>
                 </View>
               ))}
             </View>
@@ -269,11 +321,11 @@ export default function ProductDetailScreen() {
             <View>
               <View className="flex-row justify-between items-end mb-6">
                 <View>
-                  <Text className="text-muted font-black text-[10px] uppercase tracking-widest mb-1">More from store</Text>
-                  <Text className="text-2xl font-black text-white uppercase">Related Items</Text>
+                  <Text className="text-gray-400 dark:text-gray-500 font-black text-[10px] uppercase tracking-widest mb-1">More from store</Text>
+                  <Text className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Related Items</Text>
                 </View>
                 <TouchableOpacity>
-                  <Text className="text-primary font-bold text-xs uppercase">View All</Text>
+                  <Text className="text-primary font-black text-xs uppercase">View All</Text>
                 </TouchableOpacity>
               </View>
               <FlatList
@@ -286,8 +338,8 @@ export default function ProductDetailScreen() {
                     onPress={() => router.push(`/product/${item.id}`)}
                     className="mr-4 w-40"
                   >
-                    <Image source={{ uri: item.images?.[0] }} className="w-40 h-48 rounded-[24px] mb-2 bg-gray-50" />
-                    <Text className="font-bold text-gray-900 text-sm" numberOfLines={1}>{item.name}</Text>
+                    <Image source={{ uri: item.images?.[0] }} className="w-40 h-48 rounded-[24px] mb-2 bg-gray-50 dark:bg-slate-800" />
+                    <Text className="font-black text-gray-900 dark:text-white text-sm uppercase tracking-tight" numberOfLines={1}>{item.name}</Text>
                     <Text className="text-primary font-black text-xs">₵{item.basePrice || item.price}</Text>
                   </TouchableOpacity>
                 )}
@@ -297,24 +349,6 @@ export default function ProductDetailScreen() {
         </View>
       </ScrollView>
 
-      {/* Glossy Buy Bar */}
-      <BlurView intensity={20} tint="dark" style={styles.footer}>
-        <View className="flex-row items-center px-6 py-6 pb-10">
-          <TouchableOpacity 
-            onPress={handleWhatsAppOrder}
-            className="w-14 h-14 bg-green-500/20 border border-green-500/30 rounded-2xl items-center justify-center mr-4"
-          >
-            <LucideMessageCircle size={24} color="#fa8929" fill="#fa8929" />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            onPress={handleAddToCart}
-            className="flex-1 bg-primary h-14 rounded-2xl flex-row items-center justify-center shadow-xl shadow-primary/20"
-          >
-            <LucideShoppingBag size={20} color="#ffffff" />
-            <Text className="text-white font-black text-sm ml-3 uppercase tracking-widest">Add to Cart</Text>
-          </TouchableOpacity>
-        </View>
-      </BlurView>
     </View>
   );
 }

@@ -60,15 +60,15 @@ export default function SignUpScreen() {
           <LucideChevronLeft size={24} color="#442efb" />
         </TouchableOpacity>
 
-        <View className="mt-8 mb-10 items-center">
+        <View className="mt-4 mb-8 items-center">
           <Image 
             source={require('@/assets/images/logo.png')} 
-            style={{ width: 150, height: 50 }}
+            style={{ width: 130, height: 40 }}
             resizeMode="contain"
             className="opacity-90"
           />
-          <Text className="text-2xl font-black text-gray-900 mt-6">Join the Hub</Text>
-          <Text className="text-gray-500 font-medium mt-2">Create your account</Text>
+          <Text className="text-xl font-black text-gray-900 mt-6 uppercase tracking-tighter">Join the Hub</Text>
+          <Text className="text-gray-400 font-bold mt-1 uppercase text-[10px] tracking-widest">Create your account</Text>
         </View>
 
         <View className="gap-y-6">
@@ -156,8 +156,8 @@ export default function SignUpScreen() {
           </TouchableOpacity>
         </View>
 
-        <View className="mt-12 pb-12 items-center">
-          <Text className="text-gray-500 font-medium mb-4">Already have an account?</Text>
+        <View className="mt-12 pb-24 items-center">
+          <Text className="text-gray-400 font-bold mb-4 uppercase text-[10px]">Already have an account?</Text>
           <TouchableOpacity onPress={() => router.push('/auth/signin')}>
             <Text className="text-primary font-black uppercase tracking-widest text-xs border-b-2 border-primary pb-1">Sign In Instead</Text>
           </TouchableOpacity>

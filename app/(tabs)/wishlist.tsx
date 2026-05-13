@@ -1,78 +1,126 @@
 import React from 'react';
-import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import useWishlist from '@/store/useWishlist';
-import { LucideHeart, LucideShoppingBag, LucideChevronRight, LucideTrash2 } from 'lucide-react-native';
+import { 
+  LucideHeart, 
+  LucideChevronRight, 
+  LucideTrash2, 
+  LucideShoppingBag, 
+  LucideSearch,
+  LucideArrowRight,
+  LucideSparkles
+} from 'lucide-react-native';
 import { useProducts } from '@/hooks/useProducts';
-import useCart from '@/store/useCart';
+
+const { width } = Dimensions.get('window');
 
 export default function WishlistScreen() {
+  const isDark = false;
   const { items, toggleWishlist } = useWishlist();
-  const { data: allProducts } = useProducts();
-  const { addItem } = useCart();
+  const { data: allProducts, isLoading } = useProducts();
+  const router = useRouter();
 
   // Filter products that are in the wishlist
   const wishlistItems = allProducts?.filter(p => items?.includes(p.id)) || [];
 
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 justify-center items-center bg-white dark:bg-slate-950">
+        <ActivityIndicator size="large" color="#fa8929" />
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <View className="flex-1 bg-background">
-      <SafeAreaView edges={['top']} className="bg-background">
-        <View className="px-8 pt-4 pb-6 border-b border-white/5">
-          <Text className="text-sm font-bold text-muted uppercase tracking-[2px] mb-1">Your Collection</Text>
-          <Text className="text-3xl font-black text-white">Wishlist</Text>
+    <View className="flex-1 bg-white dark:bg-slate-950">
+      <SafeAreaView edges={['top']} className="bg-white dark:bg-slate-950">
+        <View className="px-8 pt-4 pb-6 flex-row justify-between items-end">
+          <View>
+            <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[4px] mb-1">My Collection</Text>
+            <Text className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">Wishlist</Text>
+          </View>
+          <View className="bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
+            <Text className="text-primary font-black text-[10px] uppercase">{wishlistItems.length} Items</Text>
+          </View>
         </View>
       </SafeAreaView>
 
       {wishlistItems.length === 0 ? (
         <View className="flex-1 justify-center items-center px-10">
-          <View className="w-24 h-24 bg-surface rounded-full items-center justify-center mb-6 border border-white/5">
-            <LucideHeart size={40} color="#333" />
+          <View className="w-24 h-24 bg-gray-50 dark:bg-slate-900 rounded-[40px] items-center justify-center mb-8 border border-gray-100 dark:border-slate-800 shadow-sm">
+            <LucideHeart size={40} color="#cbd5e1" />
           </View>
-          <Text className="text-xl font-bold text-white mb-2">No Favorites</Text>
-          <Text className="text-center text-muted font-medium">Save items you love to see them here later.</Text>
+          <Text className="text-2xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tighter">Your Bag is Empty</Text>
+          <Text className="text-center text-gray-400 dark:text-gray-500 font-medium mb-10 leading-6 px-4">
+            Items you save will appear here. Start exploring our premium collection to find something you love.
+          </Text>
+          <TouchableOpacity 
+            onPress={() => router.push('/(tabs)')}
+            className="bg-primary px-10 h-16 rounded-[24px] items-center justify-center flex-row shadow-xl shadow-primary/20"
+          >
+            <LucideSearch size={18} color="#fff" />
+            <Text className="text-white font-black uppercase tracking-widest text-xs ml-3">Explore Now</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
           data={wishlistItems}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={{ padding: 24 }}
+          contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
+          ListHeaderComponent={() => (
+            <View className="bg-gray-50 dark:bg-slate-900 p-6 rounded-[32px] border border-gray-100 dark:border-slate-800 mb-8 flex-row items-center">
+              <View className="p-3 bg-white dark:bg-slate-800 rounded-2xl mr-4 shadow-sm">
+                <LucideSparkles size={20} color="#fa8929" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-[10px] font-black text-gray-900 dark:text-white uppercase tracking-widest">Premium Curator</Text>
+                <Text className="text-gray-500 dark:text-gray-400 font-medium text-xs">Your personal selection of Ghana's finest.</Text>
+              </View>
+            </View>
+          )}
           renderItem={({ item }) => (
             <TouchableOpacity 
               activeOpacity={0.9}
-              className="flex-row items-center mb-6 bg-surface p-5 rounded-[32px] border border-white/5 shadow-2xl"
+              onPress={() => router.push(`/product/${item.id}`)}
+              className="flex-row items-center mb-6 bg-white dark:bg-slate-900 p-5 rounded-[32px] border border-gray-100 dark:border-slate-800 shadow-sm"
             >
-              <Image 
-                source={{ uri: item.images?.[0] || 'https://via.placeholder.com/100' }} 
-                className="w-24 h-24 rounded-3xl bg-background"
-              />
+              <View className="relative">
+                <Image 
+                  source={{ uri: item.images?.[0] || 'https://via.placeholder.com/100' }} 
+                  className="w-24 h-24 rounded-[24px] bg-gray-50"
+                />
+                {item.isFeatured && (
+                  <View className="absolute top-2 left-2 bg-primary px-2 py-1 rounded-lg">
+                    <Text className="text-[8px] font-black text-white uppercase">TOP</Text>
+                  </View>
+                )}
+              </View>
+              
               <View className="flex-1 ml-5">
-                <Text className="text-[10px] font-black text-primary uppercase tracking-widest mb-1">
-                  {item.category}
+                <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1" numberOfLines={1}>
+                  {item.categoryId || item.category}
                 </Text>
-                <Text className="text-lg font-black text-white mb-1" numberOfLines={1}>
+                <Text className="text-lg font-black text-gray-900 dark:text-white mb-1 tracking-tight uppercase" numberOfLines={1}>
                   {item.name}
                 </Text>
-                <Text className="text-primary font-bold mb-3">₵{item.basePrice || item.price}</Text>
+                <Text className="text-primary font-black text-sm">₵{Number(item.basePrice || item.price).toLocaleString()}</Text>
                 
-                <View className="flex-row items-center">
-                   <TouchableOpacity 
-                     onPress={() => {
-                       const variant = item.variants?.[0] || { id: 'default', price: item.basePrice || item.price };
-                       addItem(item, variant, 1, {});
-                     }}
-                     className="bg-primary px-4 py-2 rounded-xl flex-row items-center"
-                   >
-                     <LucideShoppingBag size={14} color="#121212" />
-                     <Text className="ml-2 text-background font-bold text-xs">ADD TO CART</Text>
-                   </TouchableOpacity>
+                <View className="flex-row items-center mt-3">
+                   <View className="bg-gray-50 dark:bg-slate-800 px-3 py-1 rounded-full flex-row items-center">
+                     <LucideArrowRight size={10} color="#64748b" />
+                     <Text className="ml-2 text-gray-500 dark:text-gray-400 font-bold text-[9px] uppercase">Details</Text>
+                   </View>
                 </View>
               </View>
+              
               <TouchableOpacity 
                 onPress={() => toggleWishlist(item.id)}
-                className="p-3 bg-red-500/10 rounded-2xl"
+                className="p-3 bg-red-50 dark:bg-red-500/10 rounded-2xl border border-red-100 dark:border-red-500/20"
               >
-                <LucideTrash2 size={18} color="#ef4444" />
+                <LucideTrash2 size={16} color="#ef4444" />
               </TouchableOpacity>
             </TouchableOpacity>
           )}
