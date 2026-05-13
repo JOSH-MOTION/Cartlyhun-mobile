@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { LucideArrowRight, LucideCheck } from 'lucide-react-native';
+import { LucideArrowRight, LucideCheck, LucideSearch, LucideTruck, LucideShieldCheck } from 'lucide-react-native';
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,21 +21,21 @@ const ONBOARDING_DATA = [
     id: '1',
     title: 'Elite Marketplace',
     description: 'Discover the most premium products curated for the Ghanaian lifestyle.',
-    image: require('@/assets/images/onboarding-1.png'),
+    icon: LucideSearch,
     color: '#fa8929',
   },
   {
     id: '2',
     title: 'Swift Delivery',
     description: 'Experience lightning-fast logistics with our dedicated CartlyHub courier network.',
-    image: require('@/assets/images/onboarding-2.png'),
+    icon: LucideTruck,
     color: '#fa8929',
   },
   {
     id: '3',
     title: 'Secure Trading',
     description: 'Trade with absolute confidence using our verified seller system and safety protocols.',
-    image: require('@/assets/images/onboarding-3.png'),
+    icon: LucideShieldCheck,
     color: '#fa8929',
   },
 ];
@@ -75,12 +75,8 @@ export default function OnboardingScreen() {
           renderItem={({ item }) => (
             <View style={{ width }} className="flex-1 items-center px-12">
               <View className="h-[55%] justify-center items-center">
-                <View className="w-72 h-72 bg-gray-50 rounded-[60px] items-center justify-center overflow-hidden">
-                  <Image 
-                    source={item.image} 
-                    style={{ width: '80%', height: '80%' }} 
-                    resizeMode="contain" 
-                  />
+                <View className="w-72 h-72 bg-orange-50 rounded-[60px] items-center justify-center overflow-hidden">
+                   <item.icon size={120} color="#fa8929" strokeWidth={1.5} />
                 </View>
               </View>
               

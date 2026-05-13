@@ -1,8 +1,10 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl, ScrollView, Animated, Modal, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useProducts } from '@/hooks/useProducts';
 import { useRouter } from 'expo-router';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   LucideSearch,
@@ -134,6 +136,22 @@ export default function HomeScreen() {
   const [filterVisible, setFilterVisible] = useState(false);
   const [notificationsVisible, setNotificationsVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [promotion, setPromotion] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchPromotion = async () => {
+      try {
+        const docRef = doc(db, "settings", "promotions");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setPromotion(docSnap.data());
+        }
+      } catch (error) {
+        console.error("Error fetching promotion:", error);
+      }
+    };
+    fetchPromotion();
+  }, []);
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
@@ -268,37 +286,39 @@ export default function HomeScreen() {
         ListHeaderComponent={() => (
           <View>
             {/* Special Offers Section */}
-            <View className="px-6 mb-8">
-              <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-2xl font-black text-gray-900">Special Offers</Text>
-                <TouchableOpacity>
-                  <Text className="text-primary font-bold">See All</Text>
-                </TouchableOpacity>
-              </View>
-              <ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-                snapToInterval={width - 48}
-                decelerationRate="fast"
-              >
-                <TouchableOpacity 
-                  activeOpacity={0.9}
-                  className="bg-gray-100 rounded-[40px] overflow-hidden flex-row items-center p-6 mr-4"
-                  style={{ width: width - 48, height: 180 }}
+            {promotion && promotion.isActive && (
+              <View className="px-6 mb-8">
+                <View className="flex-row justify-between items-center mb-4">
+                  <Text className="text-2xl font-black text-gray-900">Special Offers</Text>
+                  <TouchableOpacity>
+                    <Text className="text-primary font-bold">See All</Text>
+                  </TouchableOpacity>
+                </View>
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  snapToInterval={width - 48}
+                  decelerationRate="fast"
                 >
-                  <View className="flex-1 pr-4">
-                    <Text className="text-4xl font-black text-gray-900 mb-2">30%</Text>
-                    <Text className="text-lg font-black text-gray-900 leading-tight mb-2">Today's Special!</Text>
-                    <Text className="text-gray-500 text-[10px] font-bold uppercase leading-relaxed">Get discount for every order, only valid for today</Text>
-                  </View>
-                  <Image 
-                    source={{ uri: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=300&auto=format&fit=crop' }}
-                    className="w-32 h-full rounded-2xl"
-                    resizeMode="cover"
-                  />
-                </TouchableOpacity>
-              </ScrollView>
-            </View>
+                  <TouchableOpacity 
+                    activeOpacity={0.9}
+                    className="bg-gray-100 rounded-[40px] overflow-hidden flex-row items-center p-6 mr-4"
+                    style={{ width: width - 48, height: 180 }}
+                  >
+                    <View className="flex-1 pr-4">
+                      <Text className="text-4xl font-black text-gray-900 mb-2">{promotion.discount}</Text>
+                      <Text className="text-lg font-black text-gray-900 leading-tight mb-2">{promotion.title}</Text>
+                      <Text className="text-gray-500 text-[10px] font-bold uppercase leading-relaxed">{promotion.description}</Text>
+                    </View>
+                    <Image 
+                      source={{ uri: promotion.imageUrl }}
+                      className="w-32 h-full rounded-2xl"
+                      resizeMode="cover"
+                    />
+                  </TouchableOpacity>
+                </ScrollView>
+              </View>
+            )}
 
             {/* Categories Section */}
             <View className="mb-10">
