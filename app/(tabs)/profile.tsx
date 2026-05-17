@@ -32,43 +32,47 @@ export default function ProfileScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-white dark:bg-slate-950">
-        <ActivityIndicator size="large" color="#fa8929" />
-      </SafeAreaView>
+      <View className="flex-1 bg-white dark:bg-slate-950">
+        <SafeAreaView className="flex-1 justify-center items-center bg-white dark:bg-slate-950">
+          <ActivityIndicator size="large" color="#fa8929" />
+        </SafeAreaView>
+      </View>
     );
   }
 
   if (!user) {
     return (
-      <SafeAreaView className="flex-1 bg-white dark:bg-slate-950 justify-center items-center px-8">
-        <View className="w-24 h-24 bg-gray-50 dark:bg-slate-900 rounded-[40px] items-center justify-center mb-8 border border-gray-100 dark:border-slate-800 shadow-sm">
-          <LucideUser size={48} color="#fa8929" />
-        </View>
-        <Text className="text-3xl font-black text-gray-900 dark:text-white mb-2 text-center uppercase tracking-tighter">My CartlyHub</Text>
-        <Text className="text-center text-gray-400 dark:text-gray-500 font-medium mb-10 leading-6 px-4">
-          Join Ghana's most premium marketplace to start trading, saving favorites, and building your boutique.
-        </Text>
-        <TouchableOpacity 
-          className="w-full bg-primary h-16 rounded-[24px] items-center justify-center mb-4 shadow-xl shadow-primary/20"
-          onPress={() => router.push('/auth/signin')}
-        >
-          <Text className="text-white font-black uppercase tracking-widest text-sm">Sign In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          className="w-full bg-white border border-gray-100 h-16 rounded-[24px] items-center justify-center mb-10"
-          onPress={() => router.push('/auth/signup')}
-        >
-          <Text className="text-gray-900 font-black uppercase tracking-widest text-sm">Create Account</Text>
-        </TouchableOpacity>
+      <View className="flex-1 bg-white dark:bg-slate-950">
+        <SafeAreaView className="flex-1 bg-white dark:bg-slate-950 justify-center items-center px-8">
+          <View className="w-24 h-24 bg-gray-50 dark:bg-slate-900 rounded-[40px] items-center justify-center mb-8 border border-gray-100 dark:border-slate-800 shadow-sm">
+            <LucideUser size={48} color="#fa8929" />
+          </View>
+          <Text className="text-3xl font-black text-gray-900 dark:text-white mb-2 text-center uppercase tracking-tighter">My CartlyHub</Text>
+          <Text className="text-center text-gray-400 dark:text-gray-500 font-medium mb-10 leading-6 px-4">
+            Join Ghana's most premium marketplace to start trading, saving favorites, and setting up your store.
+          </Text>
+          <TouchableOpacity 
+            className="w-full bg-primary h-16 rounded-[24px] items-center justify-center mb-4 shadow-xl shadow-primary/20"
+            onPress={() => router.push('/auth/signin')}
+          >
+            <Text className="text-white font-black uppercase tracking-widest text-sm">Sign In</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            className="w-full bg-white border border-gray-100 h-16 rounded-[24px] items-center justify-center mb-10"
+            onPress={() => router.push('/auth/signup')}
+          >
+            <Text className="text-gray-900 font-black uppercase tracking-widest text-sm">Create Account</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity 
-          onPress={() => router.push('/account/settings')}
-          className="flex-row items-center p-4"
-        >
-          <LucideSettings size={20} color="#94a3b8" />
-          <Text className="ml-2 text-gray-400 font-black uppercase tracking-[2px] text-[10px]">App Settings</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+          <TouchableOpacity 
+            onPress={() => router.push('/account/settings')}
+            className="flex-row items-center p-4"
+          >
+            <LucideSettings size={20} color="#94a3b8" />
+            <Text className="ml-2 text-gray-400 font-black uppercase tracking-[2px] text-[10px]">App Settings</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </View>
     );
   }
 
@@ -194,7 +198,7 @@ export default function ProfileScreen() {
               </View>
             </View>
             <Text className="text-white font-black text-2xl mb-2 uppercase tracking-tighter">
-              {profile?.role === 'seller' ? 'Boutique Manager' : 'Start Selling'}
+              {profile?.role === 'seller' ? 'Store Manager' : 'Start Selling'}
             </Text>
             <Text className="text-white/80 font-bold text-xs leading-5">
               {profile?.role === 'seller' 

@@ -35,7 +35,7 @@ export default function StoreSetupScreen() {
     }
 
     if (!user) {
-      Alert.alert('Not Signed In', 'Please sign in to create a boutique.');
+      Alert.alert('Not Signed In', 'Please sign in to set up your store.');
       router.push('/auth/signin');
       return;
     }
@@ -66,13 +66,13 @@ export default function StoreSetupScreen() {
       }, { merge: true });
       
       Alert.alert(
-        'Boutique Created!', 
+        'Store Created!', 
         `Your store "${form.storeName}" is pending verification. Our team will review your profile shortly.`,
         [{ text: 'Go to Dashboard', onPress: () => router.replace('/(tabs)/sell') }]
       );
     } catch (error: any) {
       console.error('Error setting up store:', error);
-      Alert.alert('Error', 'Failed to set up your boutique. Please try again.');
+      Alert.alert('Error', 'Failed to set up your store. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -90,7 +90,7 @@ export default function StoreSetupScreen() {
           </TouchableOpacity>
           <View>
             <Text className="text-sm font-bold text-gray-500 uppercase tracking-[2px] mb-1">Business</Text>
-            <Text className="text-3xl font-black text-gray-900">Create Boutique</Text>
+            <Text className="text-3xl font-black text-gray-900">Sell on CartlyHub</Text>
           </View>
         </View>
       </SafeAreaView>
@@ -124,7 +124,7 @@ export default function StoreSetupScreen() {
 
             {/* Store Name */}
             <View>
-              <Text className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Boutique Name *</Text>
+              <Text className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Store Name *</Text>
               <View className="bg-gray-50 flex-row items-center px-4 py-4 rounded-2xl border border-gray-100">
                 <LucideStore size={18} color="#fa8929" />
                 <TextInput 
@@ -226,14 +226,14 @@ export default function StoreSetupScreen() {
                 <ActivityIndicator color="#ffffff" />
               ) : (
                 <>
-                  <Text className="text-white font-black uppercase tracking-widest mr-2">Create Boutique</Text>
+                  <Text className="text-white font-black uppercase tracking-widest mr-2">Sell on CartlyHub</Text>
                   <LucideCheckCircle2 size={18} color="#ffffff" />
                 </>
               )}
             </TouchableOpacity>
 
             <Text className="text-center text-[10px] text-gray-400 font-bold uppercase mt-2 pb-4">
-              By creating a boutique, you agree to our Seller Terms & Conditions.
+              By setting up a store, you agree to our Seller Terms & Conditions.
             </Text>
           </View>
         </View>

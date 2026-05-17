@@ -46,28 +46,30 @@ export default function SellScreen() {
 
   if (!user || profile?.role !== 'seller') {
     return (
-      <SafeAreaView className="flex-1 bg-background justify-center items-center px-10">
-        <Image 
-          source={require('@/assets/images/logo.png')} 
-          style={{ width: 150, height: 50, marginBottom: 40 }}
-          resizeMode="contain"
-          className="opacity-90"
-        />
-        <View className="w-20 h-20 bg-gray-50 rounded-full items-center justify-center mb-6 border border-gray-100">
-          <LucideStore size={40} color="#442efb" />
-        </View>
-        <Text className="text-2xl font-black text-gray-900 mb-2 text-center">Boutique Required</Text>
-        <Text className="text-center text-gray-500 font-medium mb-8 leading-6">
-          To sell on CartlyHub, you need to be signed in with a verified seller account. 
-          The same account works across web and mobile.
-        </Text>
-        <TouchableOpacity 
-          className="w-full bg-primary h-16 rounded-2xl items-center justify-center shadow-2xl shadow-primary/20"
-          onPress={() => router.push('/store-setup')}
-        >
-          <Text className="text-white font-black uppercase tracking-widest">Create Boutique</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+      <View className="flex-1 bg-background">
+        <SafeAreaView className="flex-1 bg-background justify-center items-center px-10">
+          <Image 
+            source={require('@/assets/images/logo.png')} 
+            style={{ width: 150, height: 50, marginBottom: 40 }}
+            resizeMode="contain"
+            className="opacity-90"
+          />
+          <View className="w-20 h-20 bg-gray-50 rounded-full items-center justify-center mb-6 border border-gray-100">
+            <LucideStore size={40} color="#442efb" />
+          </View>
+          <Text className="text-2xl font-black text-gray-900 mb-2 text-center">Store Required</Text>
+          <Text className="text-center text-gray-500 font-medium mb-8 leading-6">
+            To sell on CartlyHub, you need to be signed in with a verified seller account. 
+            The same account works across web and mobile.
+          </Text>
+          <TouchableOpacity 
+            className="w-full bg-primary h-16 rounded-2xl items-center justify-center shadow-2xl shadow-primary/20"
+            onPress={() => router.push('/store-setup')}
+          >
+            <Text className="text-white font-black uppercase tracking-widest">Sell on CartlyHub</Text>
+          </TouchableOpacity>
+        </SafeAreaView>
+      </View>
     );
   }
 

@@ -192,15 +192,21 @@ export default function HomeScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#fa8929" />
-      </SafeAreaView>
+      <View className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 justify-center items-center bg-white">
+          <ActivityIndicator size="large" color="#fa8929" />
+        </SafeAreaView>
+      </View>
     );
   }
 
   return (
     <View className="flex-1 bg-white">
-      <SafeAreaView edges={['top']} className="bg-white">
+      <SafeAreaView edges={['top']} className="bg-primary rounded-b-[40px] relative overflow-hidden pb-4">
+        {/* Background Decorative Circles */}
+        <View className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full" />
+        <View className="absolute top-10 -left-10 w-32 h-32 bg-black/5 rounded-full" />
+        
         {/* Real Data Header */}
         <View className="px-6 pt-4">
           <View className="flex-row justify-between items-center mb-8">
@@ -209,35 +215,35 @@ export default function HomeScreen() {
                 {profile?.photoURL || user?.photoURL ? (
                   <Image
                     source={{ uri: profile?.photoURL || user?.photoURL }}
-                    className="w-12 h-12 rounded-full border border-white/10 bg-surface"
+                    className="w-12 h-12 rounded-full border-2 border-white/20 bg-surface"
                   />
                 ) : (
-                  <View className="w-12 h-12 rounded-full border border-gray-100 bg-gray-50 items-center justify-center">
-                    <LucideUser size={24} color="#fa8929" />
+                  <View className="w-12 h-12 rounded-full border-2 border-white/20 bg-white/10 items-center justify-center">
+                    <LucideUser size={24} color="#ffffff" />
                   </View>
                 )}
-                <View className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-primary rounded-full border-2 border-background" />
+                <View className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-primary" />
               </View>
               <View className="ml-3">
-                <Text className="text-gray-500 text-sm font-medium">{getGreeting()}, 👋</Text>
-                <Text className="text-gray-900 text-xl font-black">{profile?.name || user?.displayName || 'Welcome!'}</Text>
+                <Text className="text-white/80 text-sm font-medium">{getGreeting()}, 👋</Text>
+                <Text className="text-white text-xl font-black">{profile?.name || user?.displayName || 'Welcome!'}</Text>
               </View>
             </View>
             <View className="flex-row items-center">
-              <TouchableOpacity onPress={() => setNotificationsVisible(true)} className="relative p-2 mr-1">
-                <LucideBell size={26} color="#000" />
-                <View className="absolute top-2.5 right-2.5 w-3 h-3 bg-primary rounded-full border-2 border-white" />
+              <TouchableOpacity onPress={() => setNotificationsVisible(true)} className="relative p-2 mr-2 bg-white/10 rounded-full">
+                <LucideBell size={22} color="#ffffff" />
+                <View className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-primary" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push('/(tabs)/wishlist')} className="p-2">
-                <LucideHeart size={26} color="#000" />
+              <TouchableOpacity onPress={() => router.push('/(tabs)/wishlist')} className="p-2 bg-white/10 rounded-full">
+                <LucideHeart size={22} color="#ffffff" />
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Search and Filter */}
-          <View className="flex-row items-center mb-8">
+          <View className="flex-row items-center mb-2">
             <View
-              className="flex-1 flex-row items-center bg-gray-50 h-14 px-4 rounded-3xl border border-gray-100 shadow-sm"
+              className="flex-1 flex-row items-center bg-white h-14 px-4 rounded-3xl shadow-sm"
             >
               <LucideSearch size={20} color="#64748b" />
               <TextInput 
@@ -256,7 +262,7 @@ export default function HomeScreen() {
                 )}
                 <View className="w-[1px] h-6 bg-gray-200 mx-1" />
                 <TouchableOpacity onPress={() => setFilterVisible(true)} className="p-1">
-                  <LucideSlidersHorizontal size={20} color="#000" />
+                  <LucideSlidersHorizontal size={20} color="#fa8929" />
                 </TouchableOpacity>
               </View>
             </View>

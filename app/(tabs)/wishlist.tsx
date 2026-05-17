@@ -26,9 +26,11 @@ export default function WishlistScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-white">
-        <ActivityIndicator size="large" color="#fa8929" />
-      </SafeAreaView>
+      <View className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 justify-center items-center bg-white">
+          <ActivityIndicator size="large" color="#fa8929" />
+        </SafeAreaView>
+      </View>
     );
   }
 
