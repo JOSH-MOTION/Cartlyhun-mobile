@@ -14,7 +14,10 @@ export default function ChatListScreen() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     
     const unsubscribe = chatService.subscribeToConversations(user.uid, (data) => {
       setConversations(data);
@@ -25,14 +28,13 @@ export default function ChatListScreen() {
   }, [user]);
 
   const renderConversation = ({ item }: { item: Conversation }) => {
-    // Determine the other participant
     const otherId = item.participants.find(id => id !== user?.uid);
     const otherUser = item.participantDetails?.[otherId || ''] || { name: 'Unknown User', photoURL: '' };
     
     return (
       <TouchableOpacity 
         onPress={() => router.push(`/chat/${item.id}`)}
-        className="flex-row items-center p-4 border-b border-gray-50 hover:bg-gray-50 transition-all"
+        className="flex-row items-center p-4 border-b border-gray-50"
       >
         <View className="relative">
           <Image 
@@ -42,7 +44,7 @@ export default function ChatListScreen() {
           <View className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />
         </View>
         
-        <div className="flex-1 ml-4">
+        <View className="flex-1 ml-4">
           <View className="flex-row justify-between items-center mb-1">
             <Text className="text-gray-900 font-black text-sm uppercase tracking-tight">{otherUser.name}</Text>
             <Text className="text-[10px] font-bold text-gray-400 uppercase">
@@ -55,7 +57,7 @@ export default function ChatListScreen() {
           >
             {item.lastMessage?.text || 'Start a conversation...'}
           </Text>
-        </div>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -70,7 +72,6 @@ export default function ChatListScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* Header */}
       <View className="px-6 py-4 flex-row items-center justify-between border-b border-gray-50">
         <TouchableOpacity onPress={() => router.back()} className="p-2 -ml-2">
           <LucideChevronLeft size={24} color="#000" />
@@ -97,6 +98,7 @@ export default function ChatListScreen() {
           keyExtractor={(item) => item.id}
           renderItem={renderConversation}
           contentContainerStyle={{ paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
         />
       )}
     </SafeAreaView>

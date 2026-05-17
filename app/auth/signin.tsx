@@ -1,133 +1,166 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '@/lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'expo-router';
-import { LucideMail, LucideLock, LucideArrowRight, LucideChevronLeft } from 'lucide-react-native';
+import { LucideMail, LucideLock, LucideArrowRight, LucideChevronLeft, LucideEye, LucideEyeOff } from 'lucide-react-native';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { promptAsync, disabled: googleDisabled } = useGoogleAuth();
 
   const handleSignIn = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password.');
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail || !password) {
+      Alert.alert('Missing Fields', 'Please enter both email and password.');
       return;
     }
 
     setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.replace('/(tabs)/profile');
+      await signInWithEmailAndPassword(auth, trimmedEmail, password);
+      // Replace so the user can't go back to sign-in screen
+      router.replace('/(tabs)');
     } catch (error: any) {
-      Alert.alert('Sign In Failed', error.message);
+      let message = 'Sign in failed. Please try again.';
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        message = 'Incorrect email or password.';
+      } else if (error.code === 'auth/too-many-requests') {
+        message = 'Too many attempts. Please try again later.';
+      } else if (error.code === 'auth/network-request-failed') {
+        message = 'Network error. Please check your connection.';
+      } else if (error.code === 'auth/invalid-email') {
+        message = 'Invalid email address.';
+      }
+      Alert.alert('Sign In Failed', message);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-background px-8">
-      <TouchableOpacity 
-        onPress={() => router.back()}
-        className="mt-4 w-10 h-10 items-center justify-center bg-surface rounded-full border border-white/5"
+    <SafeAreaView className="flex-1 bg-white">
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
       >
-        <LucideChevronLeft size={24} color="#442efb" />
-      </TouchableOpacity>
-
-      <View className="mt-4 mb-8 items-center">
-        <Image 
-          source={require('@/assets/images/logo.png')} 
-          style={{ width: 140, height: 45 }}
-          resizeMode="contain"
-          className="opacity-90"
-        />
-        <Text className="text-xl font-black text-gray-900 mt-6 uppercase tracking-tighter">Welcome Back</Text>
-        <Text className="text-gray-400 font-bold mt-1 uppercase text-[10px] tracking-widest">Sign in to your account</Text>
-      </View>
-
-      <View className="gap-y-6">
-        <View>
-          <Text className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Email Address</Text>
-          <View className="bg-surface flex-row items-center px-4 py-4 rounded-2xl border border-white/5">
-            <LucideMail size={18} color="#442efb" />
-            <TextInput 
-              className="flex-1 ml-3 font-bold text-gray-900"
-              placeholder="name@example.com"
-              placeholderTextColor="#444"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
-          </View>
-        </View>
-
-        <View>
-          <Text className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Password</Text>
-          <View className="bg-surface flex-row items-center px-4 py-4 rounded-2xl border border-white/5">
-            <LucideLock size={18} color="#442efb" />
-            <TextInput 
-              className="flex-1 ml-3 font-bold text-gray-900"
-              placeholder="••••••••"
-              placeholderTextColor="#444"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-            />
-          </View>
-        </View>
-
-        <TouchableOpacity 
-          onPress={handleSignIn}
-          disabled={loading}
-          className="bg-primary h-16 rounded-2xl items-center justify-center flex-row shadow-2xl shadow-primary/20 mt-4"
+        <ScrollView 
+          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 32 }}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          {loading ? (
-            <ActivityIndicator color="#ffffff" />
-          ) : (
-            <>
-              <Text className="text-background font-black uppercase tracking-widest mr-2">Sign In</Text>
-              <LucideArrowRight size={18} color="#ffffff" />
-            </>
-          )}
-        </TouchableOpacity>
+          <TouchableOpacity 
+            onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)')}
+            className="mt-4 w-10 h-10 items-center justify-center bg-gray-50 rounded-full border border-gray-100"
+          >
+            <LucideChevronLeft size={24} color="#000" />
+          </TouchableOpacity>
 
-        <View className="relative my-8">
-          <View className="absolute inset-0 flex items-center justify-center">
-            <View className="w-full border-t border-white/5" />
+          <View className="mt-8 mb-10 items-center">
+            <Image 
+              source={require('@/assets/images/logo.png')} 
+              style={{ width: 140, height: 45 }}
+              resizeMode="contain"
+            />
+            <Text className="text-2xl font-black text-gray-900 mt-6 uppercase tracking-tighter">Welcome Back</Text>
+            <Text className="text-gray-400 font-bold mt-1 uppercase text-[10px] tracking-widest">Sign in to your account</Text>
           </View>
-          <View className="relative flex-row justify-center">
-            <Text className="bg-white px-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">
-              Or continue with
-            </Text>
+
+          <View className="gap-y-5">
+            {/* Email */}
+            <View>
+              <Text className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Email Address</Text>
+              <View className="bg-gray-50 flex-row items-center px-4 py-4 rounded-2xl border border-gray-100">
+                <LucideMail size={18} color="#fa8929" />
+                <TextInput 
+                  className="flex-1 ml-3 font-bold text-gray-900 text-sm"
+                  placeholder="name@example.com"
+                  placeholderTextColor="#94a3b8"
+                  value={email}
+                  onChangeText={setEmail}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                  returnKeyType="next"
+                />
+              </View>
+            </View>
+
+            {/* Password */}
+            <View>
+              <Text className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2 ml-1">Password</Text>
+              <View className="bg-gray-50 flex-row items-center px-4 py-4 rounded-2xl border border-gray-100">
+                <LucideLock size={18} color="#fa8929" />
+                <TextInput 
+                  className="flex-1 ml-3 font-bold text-gray-900 text-sm"
+                  placeholder="••••••••"
+                  placeholderTextColor="#94a3b8"
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                  autoComplete="password"
+                  returnKeyType="done"
+                  onSubmitEditing={handleSignIn}
+                />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="p-1">
+                  {showPassword 
+                    ? <LucideEyeOff size={18} color="#94a3b8" />
+                    : <LucideEye size={18} color="#94a3b8" />
+                  }
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <TouchableOpacity 
+              onPress={handleSignIn}
+              disabled={loading}
+              className={`h-16 rounded-2xl items-center justify-center flex-row shadow-lg mt-2 ${loading ? 'bg-primary/70' : 'bg-primary'}`}
+            >
+              {loading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <>
+                  <Text className="text-white font-black uppercase tracking-widest mr-2 text-sm">Sign In</Text>
+                  <LucideArrowRight size={18} color="#ffffff" />
+                </>
+              )}
+            </TouchableOpacity>
+
+            {/* Divider */}
+            <View className="flex-row items-center my-4">
+              <View className="flex-1 h-[1px] bg-gray-100" />
+              <Text className="mx-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Or continue with</Text>
+              <View className="flex-1 h-[1px] bg-gray-100" />
+            </View>
+
+            {/* Google */}
+            <TouchableOpacity 
+              onPress={() => promptAsync()}
+              disabled={googleDisabled || loading}
+              className="w-full h-14 bg-white border border-gray-200 rounded-2xl flex-row items-center justify-center shadow-sm"
+            >
+              <Image 
+                source={{ uri: 'https://img.icons8.com/color/48/000000/google-logo.png' }} 
+                style={{ width: 22, height: 22 }}
+              />
+              <Text className="ml-3 font-black text-gray-800 uppercase tracking-tight text-sm">Continue with Google</Text>
+            </TouchableOpacity>
           </View>
-        </View>
 
-        <TouchableOpacity 
-          onPress={() => promptAsync()}
-          disabled={googleDisabled || loading}
-          className="w-full h-16 bg-surface border border-white/5 rounded-2xl flex-row items-center justify-center shadow-sm"
-        >
-          <Image 
-            source={{ uri: 'https://img.icons8.com/color/48/000000/google-logo.png' }} 
-            style={{ width: 24, height: 24 }}
-          />
-          <Text className="ml-3 font-black text-gray-900 uppercase tracking-tight">Google</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View className="mt-8 pb-20 items-center">
-        <Text className="text-gray-400 font-bold mb-4 uppercase text-[10px]">Don't have an account?</Text>
-        <TouchableOpacity onPress={() => router.push('/auth/signup')}>
-          <Text className="text-primary font-black uppercase tracking-widest text-xs border-b-2 border-primary pb-1">Create Account</Text>
-        </TouchableOpacity>
-      </View>
+          <View className="mt-10 pb-8 items-center">
+            <Text className="text-gray-400 font-bold mb-3 uppercase text-[10px]">Don't have an account?</Text>
+            <TouchableOpacity onPress={() => router.push('/auth/signup')}>
+              <Text className="text-primary font-black uppercase tracking-widest text-xs border-b-2 border-primary pb-1">Create Account</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

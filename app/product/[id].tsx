@@ -66,7 +66,7 @@ export default function ProductDetailScreen() {
 
   if (productsLoading || !product) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-white dark:bg-slate-950">
+      <SafeAreaView className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#fa8929" />
       </SafeAreaView>
     );
@@ -109,13 +109,13 @@ export default function ProductDetailScreen() {
   };
 
   return (
-    <View className="flex-1 bg-white dark:bg-slate-950">
+    <View className="flex-1 bg-white">
       {/* Custom Floating Header */}
       <SafeAreaView className="absolute top-0 left-0 right-0 z-10">
         <View className="px-6 py-2 flex-row justify-between items-center">
           <TouchableOpacity 
             onPress={() => router.back()}
-            className="p-3 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-gray-100 dark:border-slate-800"
+            className="p-3 bg-white/80 rounded-2xl border border-gray-100"
           >
             <LucideChevronLeft size={24} color="#fa8929" />
           </TouchableOpacity>
@@ -165,7 +165,7 @@ export default function ProductDetailScreen() {
         </View>
         
         <View className="bg-white -mt-10 rounded-t-[40px] px-6 pt-8 pb-10 border-t border-gray-100">
-          <View className="w-12 h-1 bg-gray-100 dark:bg-slate-800 rounded-full mx-auto mb-6" />
+          <View className="w-12 h-1 bg-gray-100 rounded-full mx-auto mb-6" />
           
           {/* Header Info */}
           <View className="flex-row justify-between items-start mb-4">
@@ -173,24 +173,24 @@ export default function ProductDetailScreen() {
               <Text className="text-primary font-black uppercase tracking-[2px] text-[10px] mb-2">
                 {product.category_name || product.category}
               </Text>
-              <Text className="text-3xl font-black text-gray-900 dark:text-white leading-tight uppercase tracking-tighter">
+              <Text className="text-3xl font-black text-gray-900 leading-tight uppercase tracking-tighter">
                 {product.name}
               </Text>
             </View>
-            <View className="bg-gray-50 dark:bg-slate-800 px-4 py-2 rounded-2xl border border-gray-100 dark:border-slate-800">
+            <View className="bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100">
               <Text className="text-2xl font-black text-primary">₵{price}</Text>
             </View>
           </View>
 
           {/* Stats Bar */}
-          <View className="flex-row items-center gap-4 mb-8 border-b border-gray-100 dark:border-slate-800 pb-6">
+          <View className="flex-row items-center gap-4 mb-8 border-b border-gray-100 pb-6">
             <View className="flex-row items-center">
               <LucideEye size={14} color="#64748b" />
-              <Text className="ml-1 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase">{product.views || 0} Views</Text>
+              <Text className="ml-1 text-[10px] font-bold text-gray-400 uppercase">{product.views || 0} Views</Text>
             </View>
             <View className="flex-row items-center">
               <LucideMapPin size={14} color="#64748b" />
-              <Text className="ml-1 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase">{product.location || "Accra"}</Text>
+              <Text className="ml-1 text-[10px] font-bold text-gray-400 uppercase">{product.location || "Accra"}</Text>
             </View>
             <View className="flex-row items-center ml-auto">
               <LucideZap size={14} color="#fa8929" />
@@ -201,26 +201,26 @@ export default function ProductDetailScreen() {
           <View className="flex-row flex-wrap gap-y-4 mb-10">
             {product.condition && (
               <View className="w-1/2 pr-2">
-                <Text className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">Condition</Text>
-                <Text className="text-xs font-bold text-gray-900 dark:text-white uppercase">{product.condition}</Text>
+                <Text className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Condition</Text>
+                <Text className="text-xs font-bold text-gray-900 uppercase">{product.condition}</Text>
               </View>
             )}
             {product.brand && (
               <View className="w-1/2 pl-2">
-                <Text className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">Brand</Text>
-                <Text className="text-xs font-bold text-gray-900 dark:text-white uppercase">{product.brand}</Text>
+                <Text className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Brand</Text>
+                <Text className="text-xs font-bold text-gray-900 uppercase">{product.brand}</Text>
               </View>
             )}
             {product.gender && (
               <View className="w-1/2 pr-2">
-                <Text className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">Gender</Text>
-                <Text className="text-xs font-bold text-gray-900 dark:text-white uppercase">{product.gender}</Text>
+                <Text className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Gender</Text>
+                <Text className="text-xs font-bold text-gray-900 uppercase">{product.gender}</Text>
               </View>
             )}
             {product.material && (
               <View className="w-1/2 pl-2">
-                <Text className="text-[9px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1">Material</Text>
-                <Text className="text-xs font-bold text-gray-900 dark:text-white uppercase">{product.material}</Text>
+                <Text className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Material</Text>
+                <Text className="text-xs font-bold text-gray-900 uppercase">{product.material}</Text>
               </View>
             )}
           </View>
@@ -229,7 +229,7 @@ export default function ProductDetailScreen() {
             <Text className="text-[10px] font-black text-primary uppercase tracking-[2px] mb-4">Product Insight</Text>
             <Text 
               numberOfLines={isExpanded ? undefined : 4}
-              className="text-gray-600 dark:text-gray-400 text-[15px] leading-7 font-medium"
+              className="text-gray-600 text-[15px] leading-7 font-medium"
             >
               {product.description || "No description available for this premium piece."}
             </Text>
@@ -241,17 +241,17 @@ export default function ProductDetailScreen() {
           </View>
 
           {/* Seller Profile Card */}
-          <View className="bg-gray-50 dark:bg-slate-800 p-6 rounded-[32px] border border-gray-100 dark:border-slate-800 mb-8">
+          <View className="bg-gray-50 p-6 rounded-[32px] border border-gray-100 mb-8">
             <View className="flex-row items-center mb-6">
               <View className="w-14 h-14 bg-primary rounded-2xl items-center justify-center mr-4">
                 <Text className="text-white font-black text-xl">{product.sellerName?.charAt(0).toUpperCase() || 'C'}</Text>
               </View>
               <View className="flex-1">
-                <Text className="text-gray-900 dark:text-white font-black text-lg uppercase tracking-tight">{product.sellerName || "CartlyHub Official"}</Text>
+                <Text className="text-gray-900 font-black text-lg uppercase tracking-tight">{product.sellerName || "CartlyHub Official"}</Text>
                 <Text className="text-primary text-[10px] font-bold uppercase">{getTimeOnPlatform(sellerInfo?.createdAt)}</Text>
                 <View className="flex-row items-center mt-1">
                   {[1, 2, 3, 4, 5].map(s => <LucideStar key={s} size={10} color="#fa8929" fill="#fa8929" />)}
-                  <Text className="ml-1 text-[10px] text-gray-500 dark:text-gray-400 font-bold">({sellerInfo?.reviewCount || 0})</Text>
+                  <Text className="ml-1 text-[10px] text-gray-500 font-bold">({sellerInfo?.reviewCount || 0})</Text>
                 </View>
               </View>
             </View>
@@ -310,7 +310,7 @@ export default function ProductDetailScreen() {
               ].map((tip, i) => (
                 <View key={i} className="flex-row items-center">
                   <View className="w-1.5 h-1.5 bg-primary/40 rounded-full mr-4" />
-                  <Text className="text-gray-600 dark:text-gray-400 text-[10px] font-black uppercase tracking-tight">{tip}</Text>
+                  <Text className="text-gray-600 text-[10px] font-black uppercase tracking-tight">{tip}</Text>
                 </View>
               ))}
             </View>
@@ -321,8 +321,8 @@ export default function ProductDetailScreen() {
             <View>
               <View className="flex-row justify-between items-end mb-6">
                 <View>
-                  <Text className="text-gray-400 dark:text-gray-500 font-black text-[10px] uppercase tracking-widest mb-1">More from store</Text>
-                  <Text className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Related Items</Text>
+                  <Text className="text-gray-400 font-black text-[10px] uppercase tracking-widest mb-1">More from store</Text>
+                  <Text className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Related Items</Text>
                 </View>
                 <TouchableOpacity>
                   <Text className="text-primary font-black text-xs uppercase">View All</Text>
@@ -338,8 +338,8 @@ export default function ProductDetailScreen() {
                     onPress={() => router.push(`/product/${item.id}`)}
                     className="mr-4 w-40"
                   >
-                    <Image source={{ uri: item.images?.[0] }} className="w-40 h-48 rounded-[24px] mb-2 bg-gray-50 dark:bg-slate-800" />
-                    <Text className="font-black text-gray-900 dark:text-white text-sm uppercase tracking-tight" numberOfLines={1}>{item.name}</Text>
+                    <Image source={{ uri: item.images?.[0] }} className="w-40 h-48 rounded-[24px] mb-2 bg-gray-50" />
+                    <Text className="font-black text-gray-900 text-sm uppercase tracking-tight" numberOfLines={1}>{item.name}</Text>
                     <Text className="text-primary font-black text-xs">₵{item.basePrice || item.price}</Text>
                   </TouchableOpacity>
                 )}

@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useColorScheme } from 'nativewind';
 import { 
   LucideChevronLeft, 
   LucideUser, 
@@ -26,7 +25,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function SettingsScreen() {
   const router = useRouter();
   const { user, profile } = useAuth();
-  const isDark = false;
   
   const [notifications, setNotifications] = React.useState(true);
   const [faceId, setFaceId] = React.useState(true);
@@ -61,14 +59,14 @@ export default function SettingsScreen() {
     <TouchableOpacity 
       onPress={onPress}
       disabled={type === 'switch'}
-      className="flex-row items-center p-5 bg-white dark:bg-slate-900 mb-3 rounded-3xl border border-gray-50 dark:border-slate-800"
+      className="flex-row items-center p-5 bg-white mb-3 rounded-3xl border border-gray-50"
     >
       <View className={`p-3.5 rounded-2xl mr-4`} style={{ backgroundColor: `${color}10` }}>
         <Icon size={20} color={color} />
       </View>
       <View className="flex-1">
-        <Text className="font-black text-gray-900 dark:text-white uppercase tracking-tight text-xs">{label}</Text>
-        {type === 'value' && <Text className="text-gray-400 dark:text-gray-500 font-bold text-[10px] uppercase mt-1">{value}</Text>}
+        <Text className="font-black text-gray-900 uppercase tracking-tight text-xs">{label}</Text>
+        {type === 'value' && <Text className="text-gray-400 font-bold text-[10px] uppercase mt-1">{value}</Text>}
       </View>
       {type === 'link' && <LucideChevronRight size={20} color="#cbd5e1" />}
       {type === 'switch' && (
@@ -83,21 +81,21 @@ export default function SettingsScreen() {
   );
 
   return (
-    <View className="flex-1 bg-white dark:bg-slate-950">
-      <SafeAreaView edges={['top']} className="bg-white dark:bg-slate-900 border-b border-gray-50 dark:border-slate-800">
+    <View className="flex-1 bg-white">
+      <SafeAreaView edges={['top']} className="bg-white border-b border-gray-50">
         <View className="px-6 py-4 flex-row items-center justify-between">
           <View className="flex-row items-center">
             <TouchableOpacity onPress={() => router.back()} className="p-2 -ml-2">
-              <LucideChevronLeft size={24} color={isDark ? "#fff" : "#000"} />
+              <LucideChevronLeft size={24} color="#000" />
             </TouchableOpacity>
-            <Text className="text-xl font-black text-gray-900 dark:text-white uppercase tracking-tighter ml-2">Settings</Text>
+            <Text className="text-xl font-black text-gray-900 uppercase tracking-tighter ml-2">Settings</Text>
           </View>
         </View>
       </SafeAreaView>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 24, paddingBottom: 100 }}>
         {/* Account Section */}
-        <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[3px] mb-4 ml-4">Account Settings</Text>
+        <Text className="text-[10px] font-black text-gray-400 uppercase tracking-[3px] mb-4 ml-4">Account Settings</Text>
         <SettingItem 
           icon={LucideUser} 
           label="Profile Information" 
@@ -121,7 +119,7 @@ export default function SettingsScreen() {
         />
 
         {/* Preferences Section */}
-        <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[3px] mt-8 mb-4 ml-4">Preferences</Text>
+        <Text className="text-[10px] font-black text-gray-400 uppercase tracking-[3px] mt-8 mb-4 ml-4">Preferences</Text>
         <SettingItem 
           icon={LucideBell} 
           label="Push Notifications" 
@@ -139,7 +137,7 @@ export default function SettingsScreen() {
         />
 
         {/* Support Section */}
-        <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[3px] mt-8 mb-4 ml-4">Support & Legal</Text>
+        <Text className="text-[10px] font-black text-gray-400 uppercase tracking-[3px] mt-8 mb-4 ml-4">Support & Legal</Text>
         <SettingItem 
           icon={LucideShieldCheck} 
           label="Safety Tips" 
@@ -202,7 +200,7 @@ export default function SettingsScreen() {
           )}
         </TouchableOpacity>
         
-        <Text className="text-center text-[10px] text-gray-300 dark:text-gray-700 font-bold uppercase mt-12 tracking-[4px]">
+        <Text className="text-center text-[10px] text-gray-300 font-bold uppercase mt-12 tracking-[4px]">
           CARTLYHUB PLATINUM
         </Text>
       </ScrollView>

@@ -31,8 +31,6 @@ import {
   LucideHome,
   LucideHeart,
   LucidePlus,
-  LucideSun,
-  LucideMoon,
   LucideMessageSquare,
   LucideUser,
   LucideSettings,
@@ -126,7 +124,6 @@ const ICON_MAP: Record<string, any> = {
 };
 
 export default function HomeScreen() {
-  const isDark = false;
   const { data: products, isLoading, refetch } = useProducts();
   const [refreshing, setRefreshing] = useState(false);
   const [activeCategory, setActiveCategory] = useState('all');
@@ -138,18 +135,19 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [promotion, setPromotion] = useState<any>(null);
 
-  useEffect(() => {
-    const fetchPromotion = async () => {
-      try {
-        const docRef = doc(db, "settings", "promotions");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setPromotion(docSnap.data());
-        }
-      } catch (error) {
-        console.error("Error fetching promotion:", error);
+  const fetchPromotion = async () => {
+    try {
+      const docRef = doc(db, "settings", "promotions");
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setPromotion(docSnap.data());
       }
-    };
+    } catch (error) {
+      console.error("Error fetching promotion:", error);
+    }
+  };
+
+  useEffect(() => {
     fetchPromotion();
   }, []);
 
@@ -157,7 +155,7 @@ export default function HomeScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await refetch();
+    await Promise.all([refetch(), fetchPromotion()]);
     setRefreshing(false);
   };
 
@@ -194,15 +192,15 @@ export default function HomeScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-white dark:bg-slate-950">
+      <SafeAreaView className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#fa8929" />
       </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-white dark:bg-slate-950">
-      <SafeAreaView edges={['top']} className="bg-white dark:bg-slate-950">
+    <View className="flex-1 bg-white">
+      <SafeAreaView edges={['top']} className="bg-white">
         {/* Real Data Header */}
         <View className="px-6 pt-4">
           <View className="flex-row justify-between items-center mb-8">
@@ -221,8 +219,8 @@ export default function HomeScreen() {
                 <View className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-primary rounded-full border-2 border-background" />
               </View>
               <View className="ml-3">
-                <Text className="text-gray-500 dark:text-gray-400 text-sm font-medium">{getGreeting()}, 👋</Text>
-                <Text className="text-gray-900 dark:text-white text-xl font-black">{profile?.name || user?.displayName || 'Welcome!'}</Text>
+                <Text className="text-gray-500 text-sm font-medium">{getGreeting()}, 👋</Text>
+                <Text className="text-gray-900 text-xl font-black">{profile?.name || user?.displayName || 'Welcome!'}</Text>
               </View>
             </View>
             <View className="flex-row items-center">
@@ -418,11 +416,11 @@ export default function HomeScreen() {
         onRequestClose={() => setNotificationsVisible(false)}
       >
         <View className="flex-1 bg-black/60 items-center justify-center p-6">
-          <View className="bg-white dark:bg-slate-900 w-full rounded-[40px] border border-gray-100 dark:border-slate-800 p-8">
+          <View className="bg-white w-full rounded-[40px] border border-gray-100 p-8">
             <View className="flex-row justify-between items-center mb-6">
-              <Text className="text-2xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Alerts</Text>
+              <Text className="text-2xl font-black text-gray-900 uppercase tracking-tighter">Alerts</Text>
               <TouchableOpacity onPress={() => setNotificationsVisible(false)}>
-                <LucideX size={24} color={isDark ? "#fff" : "#000"} />
+                <LucideX size={24} color="#000" />
               </TouchableOpacity>
             </View>
             
@@ -430,8 +428,8 @@ export default function HomeScreen() {
               <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-4">
                 <LucideBell size={40} color="#fa8929" />
               </View>
-              <Text className="text-gray-900 dark:text-white text-lg font-bold mb-2 uppercase tracking-tight">No New Alerts</Text>
-              <Text className="text-gray-400 dark:text-gray-500 text-center font-medium">We'll notify you when your items sell or prices drop.</Text>
+              <Text className="text-gray-900 text-lg font-bold mb-2 uppercase tracking-tight">No New Alerts</Text>
+              <Text className="text-gray-400 text-center font-medium">We'll notify you when your items sell or prices drop.</Text>
             </View>
 
             <TouchableOpacity 

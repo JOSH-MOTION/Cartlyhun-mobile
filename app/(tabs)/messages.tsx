@@ -32,20 +32,20 @@ export default function MessagesTab() {
     return (
       <TouchableOpacity 
         onPress={() => router.push(`/chat/${item.id}`)}
-        className="flex-row items-center p-4 border-b border-gray-50 dark:border-slate-800 hover:bg-gray-50 dark:hover:bg-slate-900 transition-all"
+        className="flex-row items-center p-4 border-b border-gray-50 hover:bg-gray-50 transition-all"
       >
         <View className="relative">
           <Image 
             source={{ uri: otherUser.photoURL || 'https://via.placeholder.com/100' }} 
-            className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-slate-800"
+            className="w-14 h-14 rounded-2xl bg-gray-100"
           />
-          <View className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white dark:border-slate-900" />
+          <View className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-white" />
         </View>
         
         <View className="flex-1 ml-4">
           <View className="flex-row justify-between items-center mb-1">
-            <Text className="text-gray-900 dark:text-white font-black text-sm uppercase tracking-tight">{otherUser.name}</Text>
-            <Text className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase">
+            <Text className="text-gray-900 font-black text-sm uppercase tracking-tight">{otherUser.name}</Text>
+            <Text className="text-[10px] font-bold text-gray-400 uppercase">
               {item.updatedAt ? getTimeAgo(item.updatedAt) : 'Just now'}
             </Text>
           </View>
@@ -67,7 +67,7 @@ export default function MessagesTab() {
 
   if (loading && user) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-white dark:bg-slate-950">
+      <SafeAreaView className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#fa8929" />
       </SafeAreaView>
     );
@@ -75,12 +75,12 @@ export default function MessagesTab() {
 
   if (!user) {
     return (
-      <SafeAreaView className="flex-1 bg-white dark:bg-slate-950 justify-center items-center px-10">
-        <View className="w-20 h-20 bg-gray-50 dark:bg-slate-900 rounded-[30px] items-center justify-center mb-6 border border-gray-100 dark:border-slate-800">
+      <SafeAreaView className="flex-1 bg-white justify-center items-center px-10">
+        <View className="w-20 h-20 bg-gray-50 rounded-[30px] items-center justify-center mb-6 border border-gray-100">
           <LucideMessageCircle size={32} color="#cbd5e1" />
         </View>
-        <Text className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2 text-center">Sign in to message</Text>
-        <Text className="text-gray-400 dark:text-gray-500 text-center font-medium leading-relaxed mb-8">
+        <Text className="text-lg font-black text-gray-900 uppercase tracking-tight mb-2 text-center">Sign in to message</Text>
+        <Text className="text-gray-400 text-center font-medium leading-relaxed mb-8">
           You need to be signed in to view your conversations and message sellers.
         </Text>
         <TouchableOpacity 
@@ -94,22 +94,22 @@ export default function MessagesTab() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white dark:bg-slate-950">
+    <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <View className="px-8 py-6 flex-row items-center justify-between border-b border-gray-50 dark:border-slate-800">
-        <Text className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter">Messages</Text>
-        <TouchableOpacity className="p-3 bg-gray-50 dark:bg-slate-900 rounded-2xl">
+      <View className="px-8 py-6 flex-row items-center justify-between border-b border-gray-50">
+        <Text className="text-3xl font-black text-gray-900 uppercase tracking-tighter">Messages</Text>
+        <TouchableOpacity className="p-3 bg-gray-50 rounded-2xl">
           <LucideSearch size={22} color="#fa8929" />
         </TouchableOpacity>
       </View>
 
       {conversations.length === 0 ? (
         <View className="flex-1 justify-center items-center px-10">
-          <View className="w-20 h-20 bg-gray-50 dark:bg-slate-900 rounded-[30px] items-center justify-center mb-6 border border-gray-100 dark:border-slate-800">
+          <View className="w-20 h-20 bg-gray-50 rounded-[30px] items-center justify-center mb-6 border border-gray-100">
             <LucideMessageCircle size={32} color="#cbd5e1" />
           </View>
-          <Text className="text-lg font-black text-gray-900 dark:text-white uppercase tracking-tight mb-2">No messages yet</Text>
-          <Text className="text-gray-400 dark:text-gray-500 text-center font-medium leading-relaxed">
+          <Text className="text-lg font-black text-gray-900 uppercase tracking-tight mb-2">No messages yet</Text>
+          <Text className="text-gray-400 text-center font-medium leading-relaxed">
             Reach out to sellers and start trading. Your conversations will appear here.
           </Text>
         </View>

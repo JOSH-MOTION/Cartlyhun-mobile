@@ -23,7 +23,7 @@ if (Notifications) {
 }
 
 export function useNotifications() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState<any>(null);
   const notificationListener = useRef<any>();
@@ -38,13 +38,15 @@ export function useNotifications() {
     }
 
     registerForPushNotificationsAsync().then(token => {
-      if (token) {
+      // Only update if we have a token and it's different from the one in the profile
+      if (token && token !== profile?.expoPushToken) {
         setExpoPushToken(token);
-        // Save token to user profile in Firestore
         updateDoc(doc(db, 'users', user.uid), {
           expoPushToken: token,
           updatedAt: new Date().toISOString()
         }).catch(err => console.error("Error saving push token:", err));
+      } else if (token) {
+        setExpoPushToken(token);
       }
     });
 

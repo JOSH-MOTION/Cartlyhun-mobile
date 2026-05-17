@@ -9,7 +9,19 @@
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal"
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyAEK4hIsbv7DAKNTimii1R1z0C3LWMYYXY",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "cartlyhubgh.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "studio-572308010-90c24",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "studio-572308010-90c24.firebasestorage.app",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "875954381628",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:875954381628:web:b1974abdd0b8b1e9543439",
+        "EXPO_PUBLIC_STORE_WHATSAPP": "233242403450",
+        "EXPO_PUBLIC_SITE_URL": "https://cartlyhubgh.com"
+      }
     },
     "production": {
       "autoIncrement": true

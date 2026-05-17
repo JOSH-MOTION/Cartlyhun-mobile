@@ -5,10 +5,13 @@ import { auth, db } from '@/lib/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { useEffect } from 'react';
 import { Alert } from 'react-native';
+import { useRouter } from 'expo-router';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export function useGoogleAuth() {
+  const router = useRouter();
+
   const [request, response, promptAsync] = Google.useAuthRequest({
     iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
     androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
@@ -28,19 +31,23 @@ export function useGoogleAuth() {
         if (!userSnap.exists()) {
           await setDoc(userRef, {
             uid: user.uid,
-            name: user.displayName,
+            name: user.displayName || '',
             email: user.email,
             role: 'customer',
             isActive: true,
             createdAt: new Date().toISOString(),
-            photoURL: user.photoURL,
+            photoURL: user.photoURL || null,
           });
         }
+
+        // Navigate to home after successful Google sign-in
+        router.replace('/(tabs)');
       }).catch((error) => {
-        Alert.alert('Login Error', error.message);
+        console.error('Google sign-in error:', error);
+        Alert.alert('Login Error', 'Failed to sign in with Google. Please try again.');
       });
     } else if (response?.type === 'error') {
-      Alert.alert('Google Error', 'Failed to connect to Google.');
+      Alert.alert('Google Error', 'Failed to connect to Google. Please try again.');
     }
   }, [response]);
 
@@ -48,7 +55,7 @@ export function useGoogleAuth() {
     if (!process.env.EXPO_PUBLIC_WEB_CLIENT_ID) {
       Alert.alert(
         'Configuration Required',
-        'Google Client IDs are missing in mobile/.env. Please add EXPO_PUBLIC_WEB_CLIENT_ID, IOS_CLIENT_ID, and ANDROID_CLIENT_ID.'
+        'Google Sign-In is not configured. Please add your Google Client IDs to the .env file.'
       );
       return;
     }

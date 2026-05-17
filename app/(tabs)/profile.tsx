@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from 'nativewind';
 import { 
   LucideUser, 
@@ -19,11 +18,8 @@ import {
   LucideAward,
   LucidePackage,
   LucideShoppingBag,
-  LucideMoon,
-  LucideSun,
   LucideBell,
   LucideWallet,
-  LucideChevronLeft
 } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
@@ -31,6 +27,8 @@ const { width } = Dimensions.get('window');
 export default function ProfileScreen() {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   if (loading) {
     return (
@@ -98,7 +96,6 @@ export default function ProfileScreen() {
         {/* Profile Card Section */}
         <View className="mx-6 mt-6">
           <View className="bg-white dark:bg-slate-900 p-8 rounded-[48px] border border-gray-100 dark:border-slate-800 items-center shadow-xl shadow-black/5 relative overflow-hidden">
-            {/* Ambient Background Glow */}
             <View className="absolute -top-20 -right-20 w-64 h-64 bg-primary/5 rounded-full" />
             
             <View className="relative">
@@ -134,16 +131,16 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Dynamic Stats Row */}
+        {/* Stats Row */}
         <View className="px-6 mt-8 flex-row gap-4">
           {[
             { label: 'Saved', value: '14', icon: LucideHeart, color: '#ef4444' },
             { label: 'Orders', value: '02', icon: LucidePackage, color: '#3b82f6' },
-            { label: 'Messages', value: '05', icon: LucideBell, color: '#f59e0b' }
+            { label: 'Alerts', value: '05', icon: LucideBell, color: '#f59e0b' }
           ].map((stat, idx) => (
             <View key={idx} className="flex-1 bg-white dark:bg-slate-900 p-5 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm items-center">
-              <stat.icon size={16} color={stat.color} className="mb-2" />
-              <Text className="text-xl font-black text-gray-900 dark:text-white mb-0.5">{stat.value}</Text>
+              <stat.icon size={16} color={stat.color} />
+              <Text className="text-xl font-black text-gray-900 dark:text-white mb-0.5 mt-2">{stat.value}</Text>
               <Text className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{stat.label}</Text>
             </View>
           ))}
@@ -164,7 +161,7 @@ export default function ProfileScreen() {
                 onPress={() => router.push(item.route as any)}
                 className={`flex-row items-center p-6 ${idx !== 3 ? 'border-b border-gray-50 dark:border-slate-800' : ''}`}
               >
-                <View style={{ backgroundColor: `${item.color}10` }} className="p-3.5 rounded-2xl mr-5">
+                <View style={{ backgroundColor: `${item.color}15` }} className="p-3.5 rounded-2xl mr-5">
                   <item.icon size={20} color={item.color} />
                 </View>
                 <View className="flex-1">
@@ -183,7 +180,6 @@ export default function ProfileScreen() {
             onPress={() => router.push(profile?.role === 'seller' ? '/(tabs)/sell' : '/store-setup' as any)}
             className="bg-primary p-8 rounded-[48px] shadow-2xl shadow-primary/20 relative overflow-hidden"
           >
-            {/* Abstract Decorative Shapes */}
             <View className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full" />
             <View className="absolute top-0 right-0 w-24 h-24 bg-black/5 rounded-bl-full" />
 
@@ -210,13 +206,13 @@ export default function ProfileScreen() {
                 <Text className="text-primary font-black uppercase text-[10px] tracking-widest">
                   {profile?.role === 'seller' ? 'View Dashboard' : 'Open Store Now'}
                 </Text>
-                <LucideChevronRight size={14} color="#fa8929" className="ml-2" />
+                <LucideChevronRight size={14} color="#fa8929" />
               </View>
             </View>
           </TouchableOpacity>
         </View>
 
-        {/* Session Control */}
+        {/* Sign Out */}
         <TouchableOpacity 
           onPress={() => auth.signOut()}
           className="mx-6 mt-10 mb-20 flex-row items-center justify-center p-7 border-2 border-dashed border-gray-100 dark:border-slate-800 rounded-[40px]"
@@ -226,8 +222,8 @@ export default function ProfileScreen() {
         </TouchableOpacity>
 
         <View className="items-center opacity-20 dark:opacity-10 mb-12">
-            <Text className="text-[12px] font-black text-gray-900 dark:text-white uppercase tracking-[8px]">CARTLYHUB</Text>
-            <Text className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[12px] mt-2">EST. 2024</Text>
+          <Text className="text-[12px] font-black text-gray-900 dark:text-white uppercase tracking-[8px]">CARTLYHUB</Text>
+          <Text className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[12px] mt-2">EST. 2024</Text>
         </View>
       </ScrollView>
     </View>

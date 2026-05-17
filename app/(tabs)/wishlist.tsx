@@ -17,7 +17,6 @@ import { useProducts } from '@/hooks/useProducts';
 const { width } = Dimensions.get('window');
 
 export default function WishlistScreen() {
-  const isDark = false;
   const { items, toggleWishlist } = useWishlist();
   const { data: allProducts, isLoading } = useProducts();
   const router = useRouter();
@@ -27,19 +26,19 @@ export default function WishlistScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 justify-center items-center bg-white dark:bg-slate-950">
+      <SafeAreaView className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#fa8929" />
       </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-white dark:bg-slate-950">
-      <SafeAreaView edges={['top']} className="bg-white dark:bg-slate-950">
+    <View className="flex-1 bg-white">
+      <SafeAreaView edges={['top']} className="bg-white">
         <View className="px-8 pt-4 pb-6 flex-row justify-between items-end">
           <View>
-            <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[4px] mb-1">My Collection</Text>
-            <Text className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">Wishlist</Text>
+            <Text className="text-[10px] font-black text-gray-400 uppercase tracking-[4px] mb-1">My Collection</Text>
+            <Text className="text-3xl font-black text-gray-900 tracking-tighter uppercase">Wishlist</Text>
           </View>
           <View className="bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
             <Text className="text-primary font-black text-[10px] uppercase">{wishlistItems.length} Items</Text>
@@ -49,11 +48,11 @@ export default function WishlistScreen() {
 
       {wishlistItems.length === 0 ? (
         <View className="flex-1 justify-center items-center px-10">
-          <View className="w-24 h-24 bg-gray-50 dark:bg-slate-900 rounded-[40px] items-center justify-center mb-8 border border-gray-100 dark:border-slate-800 shadow-sm">
+          <View className="w-24 h-24 bg-gray-50 rounded-[40px] items-center justify-center mb-8 border border-gray-100 shadow-sm">
             <LucideHeart size={40} color="#cbd5e1" />
           </View>
-          <Text className="text-2xl font-black text-gray-900 dark:text-white mb-2 uppercase tracking-tighter">Your Bag is Empty</Text>
-          <Text className="text-center text-gray-400 dark:text-gray-500 font-medium mb-10 leading-6 px-4">
+          <Text className="text-2xl font-black text-gray-900 mb-2 uppercase tracking-tighter">Your Bag is Empty</Text>
+          <Text className="text-center text-gray-400 font-medium mb-10 leading-6 px-4">
             Items you save will appear here. Start exploring our premium collection to find something you love.
           </Text>
           <TouchableOpacity 
@@ -71,13 +70,13 @@ export default function WishlistScreen() {
           contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={() => (
-            <View className="bg-gray-50 dark:bg-slate-900 p-6 rounded-[32px] border border-gray-100 dark:border-slate-800 mb-8 flex-row items-center">
-              <View className="p-3 bg-white dark:bg-slate-800 rounded-2xl mr-4 shadow-sm">
+            <View className="bg-gray-50 p-6 rounded-[32px] border border-gray-100 mb-8 flex-row items-center">
+              <View className="p-3 bg-white rounded-2xl mr-4 shadow-sm">
                 <LucideSparkles size={20} color="#fa8929" />
               </View>
               <View className="flex-1">
-                <Text className="text-[10px] font-black text-gray-900 dark:text-white uppercase tracking-widest">Premium Curator</Text>
-                <Text className="text-gray-500 dark:text-gray-400 font-medium text-xs">Your personal selection of Ghana's finest.</Text>
+                <Text className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Premium Curator</Text>
+                <Text className="text-gray-500 font-medium text-xs">Your personal selection of Ghana's finest.</Text>
               </View>
             </View>
           )}
@@ -85,7 +84,7 @@ export default function WishlistScreen() {
             <TouchableOpacity 
               activeOpacity={0.9}
               onPress={() => router.push(`/product/${item.id}`)}
-              className="flex-row items-center mb-6 bg-white dark:bg-slate-900 p-5 rounded-[32px] border border-gray-100 dark:border-slate-800 shadow-sm"
+              className="flex-row items-center mb-6 bg-white p-5 rounded-[32px] border border-gray-100 shadow-sm"
             >
               <View className="relative">
                 <Image 
@@ -100,25 +99,25 @@ export default function WishlistScreen() {
               </View>
               
               <View className="flex-1 ml-5">
-                <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-1" numberOfLines={1}>
+                <Text className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1" numberOfLines={1}>
                   {item.categoryId || item.category}
                 </Text>
-                <Text className="text-lg font-black text-gray-900 dark:text-white mb-1 tracking-tight uppercase" numberOfLines={1}>
+                <Text className="text-lg font-black text-gray-900 mb-1 tracking-tight uppercase" numberOfLines={1}>
                   {item.name}
                 </Text>
                 <Text className="text-primary font-black text-sm">₵{Number(item.basePrice || item.price).toLocaleString()}</Text>
                 
                 <View className="flex-row items-center mt-3">
-                   <View className="bg-gray-50 dark:bg-slate-800 px-3 py-1 rounded-full flex-row items-center">
+                   <View className="bg-gray-50 px-3 py-1 rounded-full flex-row items-center">
                      <LucideArrowRight size={10} color="#64748b" />
-                     <Text className="ml-2 text-gray-500 dark:text-gray-400 font-bold text-[9px] uppercase">Details</Text>
+                     <Text className="ml-2 text-gray-500 font-bold text-[9px] uppercase">Details</Text>
                    </View>
                 </View>
               </View>
               
               <TouchableOpacity 
                 onPress={() => toggleWishlist(item.id)}
-                className="p-3 bg-red-50 dark:bg-red-500/10 rounded-2xl border border-red-100 dark:border-red-500/20"
+                className="p-3 bg-red-50 rounded-2xl border border-red-100"
               >
                 <LucideTrash2 size={16} color="#ef4444" />
               </TouchableOpacity>
