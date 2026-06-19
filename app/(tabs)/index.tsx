@@ -179,11 +179,12 @@ export default function HomeScreen() {
   const filteredProducts = useMemo(() => {
     let filtered = products || [];
     if (activeCategory !== 'all') {
-      filtered = filtered.filter(p => p.category === activeCategory);
+      filtered = filtered.filter(p => p.categoryId === activeCategory || p.category === activeCategory);
     }
     if (searchQuery) {
       filtered = filtered.filter(p => 
         p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.categoryId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.category?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
@@ -365,7 +366,12 @@ export default function HomeScreen() {
 
             {/* Recommended Title */}
             <View className="flex-row items-center justify-between px-6 mb-6">
-              <Text className="text-2xl font-black text-gray-900 tracking-tight">Recommended</Text>
+              <View className="flex-row items-center gap-3">
+                <Text className="text-2xl font-black text-gray-900 tracking-tight">Recommended</Text>
+                <View className="bg-primary/10 px-3 py-1 rounded-full">
+                  <Text className="text-primary font-black text-xs">{filteredProducts.length}</Text>
+                </View>
+              </View>
               <TouchableOpacity>
                 <Text className="text-primary font-bold">Sort By</Text>
               </TouchableOpacity>
@@ -412,6 +418,27 @@ export default function HomeScreen() {
               </View>
             </View>
           </TouchableOpacity>
+        )}
+        ListEmptyComponent={() => (
+          <View className="items-center py-16 px-8">
+            <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-4">
+              <LucidePackage size={36} color="#fa8929" />
+            </View>
+            <Text className="text-gray-900 text-lg font-black mb-2 text-center">No Products Found</Text>
+            <Text className="text-gray-400 text-center font-medium text-sm">
+              {searchQuery
+                ? `No results for "${searchQuery}". Try a different search.`
+                : 'No products in this category yet. Check back soon!'}
+            </Text>
+            {(activeCategory !== 'all' || searchQuery) && (
+              <TouchableOpacity
+                onPress={() => { setActiveCategory('all'); setSearchQuery(''); }}
+                className="mt-6 bg-primary px-6 py-3 rounded-2xl"
+              >
+                <Text className="text-white font-black text-sm">Show All Products</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         )}
       />
       {/* Notifications Modal */}

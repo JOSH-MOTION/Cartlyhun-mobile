@@ -6,7 +6,25 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyAEK4hIsbv7DAKNTimii1R1z0C3LWMYYXY",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "studio-572308010-90c24.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "studio-572308010-90c24",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "studio-572308010-90c24.firebasestorage.app",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "875954381628",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:875954381628:web:b1974abdd0b8b1e9543439",
+        "EXPO_PUBLIC_STORE_WHATSAPP": "233242403450",
+        "EXPO_PUBLIC_STORE_MOMO_NUMBER": "0242403450",
+        "EXPO_PUBLIC_STORE_MOMO_NAME": "Joshua Doe",
+        "EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY": "pk_live_767bef4872672773d00dfe753d45d48a3b46b40b",
+        "EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME": "dlng6dqtl",
+        "EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "eccomerce",
+        "EXPO_PUBLIC_SITE_URL": "https://cartlyhubgh.com",
+        "EXPO_PUBLIC_IOS_CLIENT_ID": "875954381628-jaoi3i47d9v9g7mpo2dihgpnpjg84ipb.apps.googleusercontent.com",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "875954381628-urvjvsornjv4tv6t7vldvb1j6uslo4c8.apps.googleusercontent.com",
+        "EXPO_PUBLIC_WEB_CLIENT_ID": "875954381628-6204mne3pjp5l51cdag7fr4u2qcm37pn.apps.googleusercontent.com"
+      }
     },
     "preview": {
       "android": {
@@ -14,20 +32,55 @@
       },
       "env": {
         "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyAEK4hIsbv7DAKNTimii1R1z0C3LWMYYXY",
-        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "cartlyhubgh.com",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "studio-572308010-90c24.firebaseapp.com",
         "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "studio-572308010-90c24",
         "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "studio-572308010-90c24.firebasestorage.app",
         "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "875954381628",
         "EXPO_PUBLIC_FIREBASE_APP_ID": "1:875954381628:web:b1974abdd0b8b1e9543439",
         "EXPO_PUBLIC_STORE_WHATSAPP": "233242403450",
-        "EXPO_PUBLIC_SITE_URL": "https://cartlyhubgh.com"
+        "EXPO_PUBLIC_STORE_MOMO_NUMBER": "0242403450",
+        "EXPO_PUBLIC_STORE_MOMO_NAME": "Joshua Doe",
+        "EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY": "pk_live_767bef4872672773d00dfe753d45d48a3b46b40b",
+        "EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME": "dlng6dqtl",
+        "EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "eccomerce",
+        "EXPO_PUBLIC_SITE_URL": "https://cartlyhubgh.com",
+        "EXPO_PUBLIC_IOS_CLIENT_ID": "875954381628-jaoi3i47d9v9g7mpo2dihgpnpjg84ipb.apps.googleusercontent.com",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "875954381628-urvjvsornjv4tv6t7vldvb1j6uslo4c8.apps.googleusercontent.com",
+        "EXPO_PUBLIC_WEB_CLIENT_ID": "875954381628-6204mne3pjp5l51cdag7fr4u2qcm37pn.apps.googleusercontent.com"
       }
     },
     "production": {
-      "autoIncrement": true
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "autoIncrement": true,
+      "credentialsSource": "remote",
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "AIzaSyAEK4hIsbv7DAKNTimii1R1z0C3LWMYYXY",
+        "EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN": "studio-572308010-90c24.firebaseapp.com",
+        "EXPO_PUBLIC_FIREBASE_PROJECT_ID": "studio-572308010-90c24",
+        "EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET": "studio-572308010-90c24.firebasestorage.app",
+        "EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "875954381628",
+        "EXPO_PUBLIC_FIREBASE_APP_ID": "1:875954381628:web:b1974abdd0b8b1e9543439",
+        "EXPO_PUBLIC_STORE_WHATSAPP": "233242403450",
+        "EXPO_PUBLIC_STORE_MOMO_NUMBER": "0242403450",
+        "EXPO_PUBLIC_STORE_MOMO_NAME": "Joshua Doe",
+        "EXPO_PUBLIC_PAYSTACK_PUBLIC_KEY": "pk_live_767bef4872672773d00dfe753d45d48a3b46b40b",
+        "EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME": "dlng6dqtl",
+        "EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "eccomerce",
+        "EXPO_PUBLIC_SITE_URL": "https://cartlyhubgh.com",
+        "EXPO_PUBLIC_IOS_CLIENT_ID": "875954381628-jaoi3i47d9v9g7mpo2dihgpnpjg84ipb.apps.googleusercontent.com",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "875954381628-urvjvsornjv4tv6t7vldvb1j6uslo4c8.apps.googleusercontent.com",
+        "EXPO_PUBLIC_WEB_CLIENT_ID": "875954381628-6204mne3pjp5l51cdag7fr4u2qcm37pn.apps.googleusercontent.com"
+      }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "internal"
+      }
+    }
   }
 }
