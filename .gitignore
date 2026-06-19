@@ -40,3 +40,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Google Firebase service files (contain secrets — never commit these)
+GoogleService-Info.plist
+google-services.json
+google-service-account.json
