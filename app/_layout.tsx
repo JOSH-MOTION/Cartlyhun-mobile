@@ -5,6 +5,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import "../global.css";
 
@@ -85,6 +86,7 @@ function RootLayoutNav() {
 
   return (
     <View className="flex-1 bg-white">
+      <StatusBar style="dark" backgroundColor="#ffffff" translucent={false} />
       <ThemeProvider value={DefaultTheme}>
         <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -97,6 +99,8 @@ function RootLayoutNav() {
           <Stack.Screen name="account/profile" options={{ headerShown: false }} />
           <Stack.Screen name="account/settings" options={{ headerShown: false }} />
           <Stack.Screen name="account/orders" options={{ headerShown: false }} />
+          <Stack.Screen name="account/payment-methods" options={{ headerShown: false }} />
+          <Stack.Screen name="account/language" options={{ headerShown: false }} />
         </Stack>
       </ThemeProvider>
     </View>

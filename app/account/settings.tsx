@@ -107,7 +107,7 @@ export default function SettingsScreen() {
           value="Visa **** 4242" 
           type="value"
           color="#3b82f6"
-          onPress={() => user ? handleUnderConstruction("Payment") : router.push('/auth/signin')}
+          onPress={() => user ? router.push('/account/payment-methods') : router.push('/auth/signin')}
         />
         <SettingItem 
           icon={LucideGlobe} 
@@ -115,7 +115,7 @@ export default function SettingsScreen() {
           value="English (US)" 
           type="value"
           color="#10b981"
-          onPress={() => handleUnderConstruction("Language")}
+          onPress={() => router.push('/account/language')}
         />
 
         {/* Preferences Section */}

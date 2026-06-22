@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'expo-router';
-import { useColorScheme } from 'nativewind';
 import { 
   LucideUser, 
   LucideMail, 
@@ -27,13 +26,11 @@ const { width } = Dimensions.get('window');
 export default function ProfileScreen() {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
-  const { colorScheme } = useColorScheme();
-  const isDark = colorScheme === 'dark';
 
   if (loading) {
     return (
-      <View className="flex-1 bg-white dark:bg-slate-950">
-        <SafeAreaView className="flex-1 justify-center items-center bg-white dark:bg-slate-950">
+      <View className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 justify-center items-center bg-white">
           <ActivityIndicator size="large" color="#fa8929" />
         </SafeAreaView>
       </View>
@@ -42,13 +39,13 @@ export default function ProfileScreen() {
 
   if (!user) {
     return (
-      <View className="flex-1 bg-white dark:bg-slate-950">
-        <SafeAreaView className="flex-1 bg-white dark:bg-slate-950 justify-center items-center px-8">
-          <View className="w-24 h-24 bg-gray-50 dark:bg-slate-900 rounded-[40px] items-center justify-center mb-8 border border-gray-100 dark:border-slate-800 shadow-sm">
+      <View className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 bg-white justify-center items-center px-8">
+          <View className="w-24 h-24 bg-gray-50 rounded-[40px] items-center justify-center mb-8 border border-gray-100 shadow-sm">
             <LucideUser size={48} color="#fa8929" />
           </View>
-          <Text className="text-3xl font-black text-gray-900 dark:text-white mb-2 text-center uppercase tracking-tighter">My CartlyHub</Text>
-          <Text className="text-center text-gray-400 dark:text-gray-500 font-medium mb-10 leading-6 px-4">
+          <Text className="text-3xl font-black text-gray-900 mb-2 text-center uppercase tracking-tighter">My CartlyHub</Text>
+          <Text className="text-center text-gray-400 font-medium mb-10 leading-6 px-4">
             Join Ghana's most premium marketplace to start trading, saving favorites, and setting up your store.
           </Text>
           <TouchableOpacity 
@@ -77,20 +74,20 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View className="flex-1 bg-white dark:bg-slate-950">
+    <View className="flex-1 bg-white">
       {/* Premium Header */}
-      <SafeAreaView edges={['top']} className="bg-white dark:bg-slate-900 shadow-sm">
+      <SafeAreaView edges={['top']} className="bg-white shadow-sm">
         <View className="px-6 pt-4 pb-6 flex-row justify-between items-center">
           <View>
             <Text className="text-[10px] font-black text-primary uppercase tracking-[4px] mb-1">CartlyHub Elite</Text>
-            <Text className="text-3xl font-black text-gray-900 dark:text-white tracking-tighter uppercase">Profile</Text>
+            <Text className="text-3xl font-black text-gray-900 tracking-tighter uppercase">Profile</Text>
           </View>
           <View className="flex-row gap-3">
             <TouchableOpacity 
               onPress={() => router.push('/account/settings')}
               className="p-3 bg-gray-50 rounded-2xl border border-gray-100"
             >
-              <LucideSettings size={20} color={isDark ? "#fff" : "#000"} />
+              <LucideSettings size={20} color="#000" />
             </TouchableOpacity>
           </View>
         </View>
@@ -99,11 +96,11 @@ export default function ProfileScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         {/* Profile Card Section */}
         <View className="mx-6 mt-6">
-          <View className="bg-white dark:bg-slate-900 p-8 rounded-[48px] border border-gray-100 dark:border-slate-800 items-center shadow-xl shadow-black/5 relative overflow-hidden">
+          <View className="bg-white p-8 rounded-[48px] border border-gray-100 items-center shadow-xl shadow-black/5 relative overflow-hidden">
             <View className="absolute -top-20 -right-20 w-64 h-64 bg-primary/5 rounded-full" />
             
             <View className="relative">
-              <View className="w-32 h-32 bg-gray-50 dark:bg-slate-800 rounded-[44px] overflow-hidden mb-5 border-4 border-primary/10 shadow-lg">
+              <View className="w-32 h-32 bg-gray-50 rounded-[44px] overflow-hidden mb-5 border-4 border-primary/10 shadow-lg">
                 {profile?.photoURL || user.photoURL ? (
                   <Image source={{ uri: profile?.photoURL || user.photoURL }} className="w-full h-full" />
                 ) : (
@@ -112,24 +109,24 @@ export default function ProfileScreen() {
                   </View>
                 )}
               </View>
-              <View className="absolute bottom-1 right-1 bg-green-500 p-2.5 rounded-2xl border-4 border-white dark:border-slate-900">
+              <View className="absolute bottom-1 right-1 bg-green-500 p-2.5 rounded-2xl border-4 border-white">
                 <LucideVerified size={18} color="#fff" />
               </View>
             </View>
 
-            <Text className="text-2xl font-black text-gray-900 dark:text-white mb-1 uppercase tracking-tight text-center">
+            <Text className="text-2xl font-black text-gray-900 mb-1 uppercase tracking-tight text-center">
               {profile?.name || user.displayName || "Elite Member"}
             </Text>
-            <Text className="text-gray-400 dark:text-gray-500 font-bold text-[10px] uppercase tracking-widest mb-8 text-center">{user.email}</Text>
+            <Text className="text-gray-400 font-bold text-[10px] uppercase tracking-widest mb-8 text-center">{user.email}</Text>
             
             <View className="flex-row gap-3">
               <View className="bg-primary px-6 py-2.5 rounded-2xl flex-row items-center">
                 <LucideAward size={14} color="#fff" />
                 <Text className="text-white font-black text-[9px] uppercase tracking-widest ml-2">{profile?.role || "CUSTOMER"}</Text>
               </View>
-              <View className="bg-gray-100 dark:bg-slate-800 px-6 py-2.5 rounded-2xl border border-gray-200 dark:border-slate-700 flex-row items-center">
-                <LucideWallet size={14} color={isDark ? "#94a3b8" : "#64748b"} />
-                <Text className="text-gray-600 dark:text-gray-400 font-black text-[9px] uppercase tracking-widest ml-2">GH₵0.00</Text>
+              <View className="bg-gray-100 px-6 py-2.5 rounded-2xl border border-gray-200 flex-row items-center">
+                <LucideWallet size={14} color="#64748b" />
+                <Text className="text-gray-600 font-black text-[9px] uppercase tracking-widest ml-2">GH₵0.00</Text>
               </View>
             </View>
           </View>
@@ -142,18 +139,18 @@ export default function ProfileScreen() {
             { label: 'Orders', value: '02', icon: LucidePackage, color: '#3b82f6' },
             { label: 'Alerts', value: '05', icon: LucideBell, color: '#f59e0b' }
           ].map((stat, idx) => (
-            <View key={idx} className="flex-1 bg-white dark:bg-slate-900 p-5 rounded-[32px] border border-gray-50 dark:border-slate-800 shadow-sm items-center">
+            <View key={idx} className="flex-1 bg-white p-5 rounded-[32px] border border-gray-100 shadow-sm items-center">
               <stat.icon size={16} color={stat.color} />
-              <Text className="text-xl font-black text-gray-900 dark:text-white mb-0.5 mt-2">{stat.value}</Text>
-              <Text className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest">{stat.label}</Text>
+              <Text className="text-xl font-black text-gray-900 mb-0.5 mt-2">{stat.value}</Text>
+              <Text className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</Text>
             </View>
           ))}
         </View>
 
         {/* Settings Groups */}
         <View className="px-6 mt-10">
-          <Text className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[3px] mb-4 ml-4">Account Dashboard</Text>
-          <View className="bg-white dark:bg-slate-900 rounded-[44px] overflow-hidden border border-gray-100 dark:border-slate-800 shadow-sm">
+          <Text className="text-[10px] font-black text-gray-400 uppercase tracking-[3px] mb-4 ml-4">Account Dashboard</Text>
+          <View className="bg-white rounded-[44px] overflow-hidden border border-gray-100 shadow-sm">
             {[
               { label: 'My Conversations', sub: 'Chat history with sellers', icon: LucideMail, color: '#3b82f6', route: '/(tabs)/messages' },
               { label: 'Favorite Items', sub: 'Manage your saved products', icon: LucideHeart, color: '#ef4444', route: '/(tabs)/wishlist' },
@@ -163,14 +160,14 @@ export default function ProfileScreen() {
               <TouchableOpacity 
                 key={idx}
                 onPress={() => router.push(item.route as any)}
-                className={`flex-row items-center p-6 ${idx !== 3 ? 'border-b border-gray-50 dark:border-slate-800' : ''}`}
+                className={`flex-row items-center p-6 ${idx !== 3 ? 'border-b border-gray-50' : ''}`}
               >
                 <View style={{ backgroundColor: `${item.color}15` }} className="p-3.5 rounded-2xl mr-5">
                   <item.icon size={20} color={item.color} />
                 </View>
                 <View className="flex-1">
-                  <Text className="font-black text-gray-900 dark:text-white uppercase tracking-tight text-xs">{item.label}</Text>
-                  <Text className="text-[10px] text-gray-400 dark:text-gray-500 font-bold uppercase mt-1">{item.sub}</Text>
+                  <Text className="font-black text-gray-900 uppercase tracking-tight text-xs">{item.label}</Text>
+                  <Text className="text-[10px] text-gray-400 font-bold uppercase mt-1">{item.sub}</Text>
                 </View>
                 <LucideChevronRight size={18} color="#cbd5e1" />
               </TouchableOpacity>
@@ -219,15 +216,15 @@ export default function ProfileScreen() {
         {/* Sign Out */}
         <TouchableOpacity 
           onPress={() => auth.signOut()}
-          className="mx-6 mt-10 mb-20 flex-row items-center justify-center p-7 border-2 border-dashed border-gray-100 dark:border-slate-800 rounded-[40px]"
+          className="mx-6 mt-10 mb-20 flex-row items-center justify-center p-7 border-2 border-dashed border-gray-100 rounded-[40px]"
         >
-          <LucideLogOut size={20} color={isDark ? "#475569" : "#94a3b8"} />
-          <Text className="ml-3 font-black text-gray-400 dark:text-gray-600 uppercase tracking-[4px] text-[10px]">Secure Sign Out</Text>
+          <LucideLogOut size={20} color="#94a3b8" />
+          <Text className="ml-3 font-black text-gray-400 uppercase tracking-[4px] text-[10px]">Secure Sign Out</Text>
         </TouchableOpacity>
 
-        <View className="items-center opacity-20 dark:opacity-10 mb-12">
-          <Text className="text-[12px] font-black text-gray-900 dark:text-white uppercase tracking-[8px]">CARTLYHUB</Text>
-          <Text className="text-[8px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[12px] mt-2">EST. 2024</Text>
+        <View className="items-center opacity-20 mb-12">
+          <Text className="text-[12px] font-black text-gray-900 uppercase tracking-[8px]">CARTLYHUB</Text>
+          <Text className="text-[8px] font-black text-gray-400 uppercase tracking-[12px] mt-2">EST. 2024</Text>
         </View>
       </ScrollView>
     </View>
