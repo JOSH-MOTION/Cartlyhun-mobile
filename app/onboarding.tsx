@@ -22,21 +22,21 @@ const ONBOARDING_DATA = [
     title: 'Elite Marketplace',
     description: 'Discover the most premium products curated for the Ghanaian lifestyle.',
     icon: LucideSearch,
-    color: '#fa8929',
+    color: '#2563eb',
   },
   {
     id: '2',
     title: 'Swift Delivery',
     description: 'Experience lightning-fast logistics with our dedicated CartlyHub courier network.',
     icon: LucideTruck,
-    color: '#fa8929',
+    color: '#2563eb',
   },
   {
     id: '3',
     title: 'Secure Trading',
     description: 'Trade with absolute confidence using our verified seller system and safety protocols.',
     icon: LucideShieldCheck,
-    color: '#fa8929',
+    color: '#2563eb',
   },
 ];
 
@@ -75,8 +75,8 @@ export default function OnboardingScreen() {
           renderItem={({ item }) => (
             <View style={{ width }} className="flex-1 items-center px-12">
               <View className="h-[55%] justify-center items-center">
-                <View className="w-72 h-72 bg-orange-50 rounded-[60px] items-center justify-center overflow-hidden">
-                   <item.icon size={120} color="#fa8929" strokeWidth={1.5} />
+                <View className="w-72 h-72 bg-blue-50 rounded-[60px] items-center justify-center overflow-hidden">
+                   <item.icon size={120} color="#2563eb" strokeWidth={1.5} />
                 </View>
               </View>
               

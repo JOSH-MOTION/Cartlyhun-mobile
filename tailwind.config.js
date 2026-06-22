@@ -7,12 +7,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#fa8929", // Brand Orange (Yellow)
+        primary: "#2563eb", // Brand Blue
         secondary: "#442efb", // Brand Indigo
         background: "#ffffff", // Light Background
         surface: "#f8fafc", // Light Surface for cards
         "primary-fg": "#ffffff", // Text on primary
-        accent: "#fa8929",
+        accent: "#2563eb",
         muted: "#64748b",
         green: {
           500: '#fa8929',
