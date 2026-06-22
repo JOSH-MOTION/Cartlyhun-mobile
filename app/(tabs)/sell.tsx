@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert, Modal, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'expo-router';
@@ -14,7 +14,9 @@ import {
   LucideCheckCircle2, 
   LucideInfo, 
   LucideChevronDown,
-  LucideStore
+  LucideStore,
+  LucideX,
+  LucideChevronRight
 } from 'lucide-react-native';
 
 export default function SellScreen() {
@@ -23,13 +25,15 @@ export default function SellScreen() {
   const [upload] = useUpload();
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [selectedCategoryTemp, setSelectedCategoryTemp] = useState<any>(null);
 
   const [form, setForm] = useState({
     name: "",
     description: "",
     categoryId: "",
     subcategoryId: "",
-    costPrice: "",
     basePrice: "",
     totalStock: "10",
     images: [] as string[],
@@ -109,7 +113,7 @@ export default function SellScreen() {
       await createProduct({
         ...form,
         basePrice: Number(form.basePrice),
-        costPrice: Number(form.costPrice),
+        costPrice: Number(form.basePrice), // Using basePrice as costPrice since we removed it
         totalStock: Number(form.totalStock),
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -127,9 +131,24 @@ export default function SellScreen() {
   return (
     <View className="flex-1 bg-background">
       <SafeAreaView edges={['top']} className="bg-background">
-        <View className="px-8 pt-4 pb-6">
-          <Text className="text-sm font-bold text-gray-500 uppercase tracking-[2px] mb-1">Inventory Management</Text>
-          <Text className="text-3xl font-black text-gray-900">Add Product</Text>
+        <View className="px-6 pt-4 pb-4 flex-row justify-between items-center">
+          <View>
+            <Text className="text-sm font-bold text-gray-500 uppercase tracking-[2px] mb-1">Inventory</Text>
+            <Text className="text-3xl font-black text-gray-900">Add Product</Text>
+          </View>
+          
+          {/* Post Product Button Moved to Top */}
+          <TouchableOpacity 
+            onPress={handleCreate}
+            disabled={loading}
+            className="bg-primary px-6 py-4 rounded-[20px] shadow-2xl shadow-primary/20 flex-row items-center justify-center disabled:opacity-50"
+          >
+            {loading ? (
+              <ActivityIndicator color="#ffffff" size="small" />
+            ) : (
+              <Text className="text-white font-black uppercase tracking-widest text-xs">Post</Text>
+            )}
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
 
@@ -152,10 +171,10 @@ export default function SellScreen() {
             {form.images.length < 4 && (
               <TouchableOpacity 
                 onPress={pickImages}
-                className="w-[47%] aspect-square rounded-3xl border-2 border-dashed border-gray-100 items-center justify-center bg-gray-50"
+                className="w-[47%] aspect-square rounded-3xl border-2 border-dashed border-gray-200 items-center justify-center bg-gray-50"
               >
                 {isUploading ? (
-                  <ActivityIndicator color="#442efb" />
+                  <ActivityIndicator color="#2563eb" />
                 ) : (
                   <>
                     <LucidePlus size={32} color="#94a3b8" />
@@ -170,22 +189,29 @@ export default function SellScreen() {
         {/* Basic Info */}
         <View className="px-6 mt-8">
           <Text className="text-[10px] font-black text-gray-500 uppercase tracking-[2px] mb-4 ml-2">Basic Info</Text>
-          <View className="bg-gray-50 p-6 rounded-[32px] border border-gray-100 gap-y-6 shadow-2xl">
+          <View className="bg-gray-50 p-6 rounded-[32px] border border-gray-100 gap-y-6 shadow-sm">
             <View>
               <Text className="text-[10px] font-black text-gray-500 uppercase mb-2 ml-1">Product Name *</Text>
               <TextInput 
                 className="bg-white p-4 rounded-2xl font-bold text-gray-900 border border-gray-100"
                 placeholder="E.g. Vintage Leather Jacket"
-                placeholderTextColor="#444"
+                placeholderTextColor="#94a3b8"
                 value={form.name}
                 onChangeText={(text) => setForm({ ...form, name: text })}
               />
             </View>
             <View>
-              <Text className="text-[10px] font-black text-gray-500 uppercase mb-2 ml-1">Category *</Text>
-              <TouchableOpacity className="bg-white p-4 rounded-2xl flex-row justify-between items-center border border-gray-100">
-                <Text className="font-bold text-gray-900">{form.categoryId || "Select Category"}</Text>
-                <LucideChevronDown size={18} color="#442efb" />
+              <Text className="text-[10px] font-black text-gray-500 uppercase mb-2 ml-1">Category & Subcategory *</Text>
+              <TouchableOpacity 
+                onPress={() => setShowCategoryModal(true)}
+                className="bg-white p-4 rounded-2xl flex-row justify-between items-center border border-gray-100"
+              >
+                <Text className="font-bold text-gray-900">
+                  {form.categoryId && form.subcategoryId 
+                    ? `${categories.find(c => c.id === form.categoryId)?.name} > ${categories.find(c => c.id === form.categoryId)?.subcategories?.find((s:any) => s.id === form.subcategoryId)?.name}`
+                    : "Select Category"}
+                </Text>
+                <LucideChevronDown size={18} color="#2563eb" />
               </TouchableOpacity>
             </View>
             <View>
@@ -193,10 +219,11 @@ export default function SellScreen() {
               <TextInput 
                 className="bg-white p-4 rounded-2xl font-bold text-gray-900 h-24 border border-gray-100"
                 placeholder="Tell buyers about your item..."
-                placeholderTextColor="#444"
+                placeholderTextColor="#94a3b8"
                 multiline
                 numberOfLines={4}
                 value={form.description}
+                textAlignVertical="top"
                 onChangeText={(text) => setForm({ ...form, description: text })}
               />
             </View>
@@ -206,58 +233,63 @@ export default function SellScreen() {
         {/* Pricing */}
         <View className="px-6 mt-8">
           <Text className="text-[10px] font-black text-gray-500 uppercase tracking-[2px] mb-4 ml-2">Pricing (GHS)</Text>
-          <View className="bg-gray-50 p-6 rounded-[32px] border border-gray-100 gap-y-6 shadow-2xl">
-            <View className="flex-row gap-4">
-              <View className="flex-1">
-                <Text className="text-[10px] font-black text-muted uppercase mb-2 ml-1">Cost Price</Text>
-                <TextInput 
-                  className="bg-background p-4 rounded-2xl font-bold text-white border border-white/5"
-                  placeholder="0.00"
-                  placeholderTextColor="#444"
-                  keyboardType="numeric"
-                  value={form.costPrice}
-                  onChangeText={(text) => setForm({ ...form, costPrice: text })}
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="text-[10px] font-black text-muted uppercase mb-2 ml-1">Selling Price *</Text>
-                <TextInput 
-                  className="bg-background p-4 rounded-2xl font-black text-primary text-lg border border-white/5"
-                  placeholder="0.00"
-                  placeholderTextColor="#444"
-                  keyboardType="numeric"
-                  value={form.basePrice}
-                  onChangeText={(text) => setForm({ ...form, basePrice: text })}
-                />
-              </View>
+          <View className="bg-gray-50 p-6 rounded-[32px] border border-gray-100 shadow-sm">
+            <View>
+              <Text className="text-[10px] font-black text-gray-500 uppercase mb-2 ml-1">Selling Price *</Text>
+              <TextInput 
+                className="bg-white p-4 rounded-2xl font-black text-primary text-lg border border-primary/20"
+                placeholder="0.00"
+                placeholderTextColor="#94a3b8"
+                keyboardType="numeric"
+                value={form.basePrice}
+                onChangeText={(text) => setForm({ ...form, basePrice: text })}
+              />
             </View>
-            {form.basePrice && form.costPrice && (
-              <View className="bg-primary/10 p-4 rounded-2xl flex-row justify-between items-center border border-primary/20">
-                <Text className="text-[10px] font-black text-primary uppercase">Estimated Profit</Text>
-                <Text className="font-black text-primary">₵{Number(form.basePrice) - Number(form.costPrice)}</Text>
-              </View>
-            )}
           </View>
         </View>
-
-        {/* Action Button */}
-        <View className="px-6 mt-10">
-          <TouchableOpacity 
-            onPress={handleCreate}
-            disabled={loading}
-            className="bg-primary h-16 rounded-[24px] shadow-2xl shadow-primary/20 flex-row items-center justify-center disabled:opacity-50"
-          >
-            {loading ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <>
-                <Text className="text-white font-black uppercase tracking-widest mr-2">Post Product</Text>
-                <LucideCheckCircle2 size={18} color="#ffffff" />
-              </>
-            )}
-          </TouchableOpacity>
-        </View>
       </ScrollView>
+
+      {/* Category Selection Modal */}
+      <Modal visible={showCategoryModal} animationType="slide" presentationStyle="pageSheet">
+        <SafeAreaView className="flex-1 bg-background">
+          <View className="px-6 py-4 flex-row justify-between items-center border-b border-gray-100">
+            <Text className="text-xl font-black text-gray-900">
+              {selectedCategoryTemp ? selectedCategoryTemp.name : 'Select Category'}
+            </Text>
+            <TouchableOpacity onPress={() => {
+              if (selectedCategoryTemp) {
+                setSelectedCategoryTemp(null);
+              } else {
+                setShowCategoryModal(false);
+              }
+            }} className="bg-gray-100 p-2 rounded-full">
+              <LucideX size={20} color="#000" />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={selectedCategoryTemp ? selectedCategoryTemp.subcategories : categories}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }: any) => (
+              <TouchableOpacity 
+                className="px-6 py-5 border-b border-gray-50 flex-row justify-between items-center"
+                onPress={() => {
+                  if (!selectedCategoryTemp) {
+                    setSelectedCategoryTemp(item);
+                  } else {
+                    setForm({ ...form, categoryId: selectedCategoryTemp.id, subcategoryId: item.id });
+                    setSelectedCategoryTemp(null);
+                    setShowCategoryModal(false);
+                  }
+                }}
+              >
+                <Text className="font-bold text-gray-900 text-base">{item.name}</Text>
+                <LucideChevronRight size={18} color="#94a3b8" />
+              </TouchableOpacity>
+            )}
+          />
+        </SafeAreaView>
+      </Modal>
+
     </View>
   );
 }

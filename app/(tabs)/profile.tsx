@@ -178,7 +178,7 @@ export default function ProfileScreen() {
         {/* Business Section */}
         <View className="px-6 mt-8">
           <TouchableOpacity 
-            onPress={() => router.push(profile?.role === 'seller' ? '/(tabs)/sell' : '/store-setup' as any)}
+            onPress={() => router.push(profile?.role === 'seller' ? '/account/seller-dashboard' : '/store-setup' as any)}
             className="bg-primary p-8 rounded-[48px] shadow-2xl shadow-primary/20 relative overflow-hidden"
           >
             <View className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full" />
