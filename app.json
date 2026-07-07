@@ -33,7 +33,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo-padded.png",
-        "backgroundColor": "#2563eb"
+        "backgroundColor": "#ffffff"
       },
       "icon": "./assets/images/logo-padded.png",
       "package": "com.cartlyhub.mobile",
