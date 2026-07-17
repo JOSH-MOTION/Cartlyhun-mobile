@@ -110,11 +110,26 @@ export default function SellScreen() {
 
     setLoading(true);
     try {
+      const selectedCat = categories.find(c => c.id === form.categoryId);
+      const selectedSub = selectedCat?.subcategories?.find((s: any) => s.id === form.subcategoryId);
+      const categoryNameText = selectedCat && selectedSub ? `${selectedCat.name} > ${selectedSub.name}` : (selectedCat?.name || "");
+
       await createProduct({
         ...form,
         basePrice: Number(form.basePrice),
         costPrice: Number(form.basePrice), // Using basePrice as costPrice since we removed it
         totalStock: Number(form.totalStock),
+        category: selectedCat?.name || "",
+        category_name: categoryNameText,
+        variants: [{
+          vId: Date.now().toString(),
+          size: "Standard",
+          color: "Standard",
+          stock: Number(form.totalStock) || 10,
+          price: Number(form.basePrice) || 0,
+          sku: `${form.name.substring(0, 3).replace(/\s/g, "").toUpperCase()}-STD`,
+          hexColor: ""
+        }],
         createdAt: new Date(),
         updatedAt: new Date(),
         isActive: true,

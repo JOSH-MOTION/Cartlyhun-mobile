@@ -21,13 +21,55 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { auth } from '@/lib/firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as SecureStore from 'expo-secure-store';
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { user, profile } = useAuth();
   
   const [notifications, setNotifications] = React.useState(true);
-  const [faceId, setFaceId] = React.useState(true);
+  const [faceId, setFaceId] = React.useState(false);
+
+  React.useEffect(() => {
+    AsyncStorage.getItem("biometrics-enabled").then(val => {
+      setFaceId(val === "true");
+    });
+  }, []);
+
+  const handleToggleFaceId = async (value: boolean) => {
+    if (value) {
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      if (!hasHardware || !isEnrolled) {
+        Alert.alert(
+          "Biometrics Unavailable",
+          "Fingerprint/FaceID hardware is not available, or no biometric profiles are enrolled on this device."
+        );
+        setFaceId(false);
+        return;
+      }
+
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Confirm biometric authentication to enable login",
+        fallbackLabel: "Use Passcode"
+      });
+
+      if (result.success) {
+        setFaceId(true);
+        await AsyncStorage.setItem("biometrics-enabled", "true");
+        Alert.alert("Success", "Biometric Authentication enabled! Email and password will be securely saved when you next sign in manually.");
+      } else {
+        setFaceId(false);
+      }
+    } else {
+      setFaceId(false);
+      await AsyncStorage.removeItem("biometrics-enabled");
+      await SecureStore.deleteItemAsync("user-email");
+      await SecureStore.deleteItemAsync("user-password");
+      Alert.alert("Disabled", "Biometric Authentication has been disabled and cached credentials removed.");
+    }
+  };
 
   const handleSignOut = () => {
     Alert.alert(
@@ -129,10 +171,10 @@ export default function SettingsScreen() {
         />
         <SettingItem 
           icon={LucideShield} 
-          label="Face ID Security" 
+          label="Biometric Security" 
           type="switch" 
           value={faceId} 
-          onPress={() => setFaceId(!faceId)} 
+          onPress={handleToggleFaceId} 
           color="#f43f5e"
         />
 

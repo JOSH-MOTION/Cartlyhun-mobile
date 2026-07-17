@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
+import { getSellerProducts } from '@/utils/firebaseData';
 import { 
   LucideChevronLeft, 
   LucideStore, 
@@ -15,7 +16,18 @@ import {
 
 export default function SellerDashboard() {
   const router = useRouter();
-  const { profile } = useAuth();
+  const { user, profile } = useAuth();
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user?.uid) {
+      getSellerProducts(user.uid).then(res => {
+        setProducts(res);
+        setLoading(false);
+      });
+    }
+  }, [user?.uid]);
 
   return (
     <View className="flex-1 bg-background">
@@ -56,7 +68,7 @@ export default function SellerDashboard() {
                 <LucidePackage size={20} color="#0f172a" />
               </View>
               <Text className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Active Items</Text>
-              <Text className="text-xl font-black text-gray-900 mt-1">0</Text>
+              <Text className="text-xl font-black text-gray-900 mt-1">{loading ? "..." : products.length}</Text>
             </View>
           </View>
         </View>
@@ -93,6 +105,56 @@ export default function SellerDashboard() {
               </View>
             </View>
           </TouchableOpacity>
+        </View>
+
+        {/* Active Products List */}
+        <View className="px-6 mt-8">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-[10px] font-black text-gray-400 uppercase tracking-[3px]">My Products</Text>
+            <Text className="text-[10px] font-black text-primary uppercase">{products.length} Items</Text>
+          </View>
+
+          {loading ? (
+            <ActivityIndicator color="#fa8929" size="small" className="py-6" />
+          ) : products.length === 0 ? (
+            <View className="bg-white p-8 rounded-3xl border border-gray-100 items-center justify-center">
+              <Text className="text-gray-400 font-bold uppercase text-xs">No products uploaded yet</Text>
+            </View>
+          ) : (
+            <View className="gap-y-4">
+              {products.map((item) => (
+                <View key={item.id} className="bg-white p-4 rounded-3xl border border-gray-100 flex-row items-center justify-between shadow-sm">
+                  <View className="flex-row items-center flex-1 mr-4">
+                    <View className="w-12 h-12 bg-gray-50 rounded-xl overflow-hidden mr-3">
+                      {item.images?.[0] ? (
+                        <Image source={{ uri: item.images[0] }} className="w-full h-full" resizeMode="cover" />
+                      ) : (
+                        <View className="w-full h-full items-center justify-center bg-gray-100">
+                          <LucidePackage size={20} color="#cbd5e1" />
+                        </View>
+                      )}
+                    </View>
+                    <View className="flex-1">
+                      <Text className="font-black text-gray-900 uppercase tracking-tight text-[11px]" numberOfLines={1}>
+                        {item.name}
+                      </Text>
+                      <Text className="text-[9px] text-gray-400 font-bold uppercase mt-0.5">
+                        ₵{item.basePrice || item.price} • {item.totalStock || 0} in stock
+                      </Text>
+                    </View>
+                  </View>
+                  
+                  {/* Action/View details */}
+                  <TouchableOpacity 
+                    onPress={() => router.push(`/product/${item.id}`)}
+                    className="bg-gray-50 border border-gray-100 px-4 py-2 rounded-xl"
+                  >
+                    <Text className="text-primary font-black uppercase text-[8px] tracking-widest">Details</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
     </View>

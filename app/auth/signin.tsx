@@ -4,16 +4,60 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth } from '@/lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useRouter } from 'expo-router';
-import { LucideMail, LucideLock, LucideArrowRight, LucideChevronLeft, LucideEye, LucideEyeOff } from 'lucide-react-native';
+import { LucideMail, LucideLock, LucideArrowRight, LucideChevronLeft, LucideEye, LucideEyeOff, LucideFingerprint } from 'lucide-react-native';
 import { useGoogleAuth } from '@/hooks/useGoogleAuth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as SecureStore from 'expo-secure-store';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [hasBiometricPreference, setHasBiometricPreference] = useState(false);
   const router = useRouter();
   const { promptAsync, disabled: googleDisabled } = useGoogleAuth();
+
+  React.useEffect(() => {
+    const checkBiometricPreference = async () => {
+      const enabled = await AsyncStorage.getItem("biometrics-enabled") === "true";
+      const cachedEmail = await SecureStore.getItemAsync("user-email");
+      const cachedPassword = await SecureStore.getItemAsync("user-password");
+      if (enabled && cachedEmail && cachedPassword) {
+        setHasBiometricPreference(true);
+        // Automatically trigger biometric sign-in
+        handleBiometricSignIn(cachedEmail, cachedPassword);
+      }
+    };
+    checkBiometricPreference();
+  }, []);
+
+  const handleBiometricSignIn = async (cachedEmail?: string, cachedPassword?: string) => {
+    try {
+      const mail = cachedEmail || await SecureStore.getItemAsync("user-email");
+      const pass = cachedPassword || await SecureStore.getItemAsync("user-password");
+      if (!mail || !pass) {
+        Alert.alert("Biometrics Setup", "Please log in manually with your email and password first to cache biometric credentials.");
+        return;
+      }
+
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Sign in to CartlyHub",
+        fallbackLabel: "Use Password"
+      });
+
+      if (result.success) {
+        setLoading(true);
+        await signInWithEmailAndPassword(auth, mail, pass);
+        router.replace('/(tabs)');
+      }
+    } catch (error) {
+      console.error("Biometric authentication error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSignIn = async () => {
     const trimmedEmail = email.trim().toLowerCase();
@@ -25,6 +69,12 @@ export default function SignInScreen() {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, trimmedEmail, password);
+      // Cache credentials if biometrics enabled
+      const enabled = await AsyncStorage.getItem("biometrics-enabled") === "true";
+      if (enabled) {
+        await SecureStore.setItemAsync("user-email", trimmedEmail);
+        await SecureStore.setItemAsync("user-password", password);
+      }
       // Replace so the user can't go back to sign-in screen
       router.replace('/(tabs)');
     } catch (error: any) {
@@ -131,6 +181,17 @@ export default function SignInScreen() {
                 </>
               )}
             </TouchableOpacity>
+
+            {hasBiometricPreference && (
+              <TouchableOpacity 
+                onPress={() => handleBiometricSignIn()}
+                disabled={loading}
+                className="h-16 rounded-2xl items-center justify-center flex-row border border-primary bg-primary/5 mt-2"
+              >
+                <LucideFingerprint size={20} color="#fa8929" />
+                <Text className="text-primary font-black uppercase tracking-widest ml-3 text-xs">Biometric Sign In</Text>
+              </TouchableOpacity>
+            )}
 
             {/* Divider */}
             <View className="flex-row items-center my-4">

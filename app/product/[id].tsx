@@ -28,6 +28,7 @@ import { useColorScheme } from 'nativewind';
 import useWishlist from '@/store/useWishlist';
 import { useAuth } from '@/hooks/useAuth';
 import { chatService } from '@/services/chatService';
+import { categories } from '@/utils/categories';
 
 const { width } = Dimensions.get('window');
 
@@ -39,6 +40,19 @@ export default function ProductDetailScreen() {
   const [activeImage, setActiveImage] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
+
+  const getCategoryName = () => {
+    if (!product) return "Uncategorized";
+    const p = product as any;
+    if (p.category_name) return p.category_name;
+    if (p.category) return p.category;
+    const cat = categories.find(c => c.id === p.categoryId);
+    const sub = cat?.subcategories?.find((s: any) => s.id === p.subcategoryId);
+    if (cat && sub) {
+      return `${cat.name} > ${sub.name}`;
+    }
+    return cat ? cat.name : "Uncategorized";
+  };
 
   useEffect(() => {
     if (id && id !== '[id]') {
@@ -171,7 +185,7 @@ export default function ProductDetailScreen() {
           <View className="flex-row justify-between items-start mb-4">
             <View className="flex-1 mr-4">
               <Text className="text-primary font-black uppercase tracking-[2px] text-[10px] mb-2">
-                {product.category_name || product.category}
+                {getCategoryName()}
               </Text>
               <Text className="text-3xl font-black text-gray-900 leading-tight uppercase tracking-tighter">
                 {product.name}
