@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/hooks/useAuth';
 import { getSellerProducts } from '@/utils/firebaseData';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import { 
   LucideChevronLeft, 
   LucideStore, 
@@ -11,7 +13,8 @@ import {
   LucidePackage, 
   LucideUsers, 
   LucidePlus,
-  LucideSettings
+  LucideSettings,
+  LucideAlertCircle
 } from 'lucide-react-native';
 
 export default function SellerDashboard() {
@@ -19,6 +22,7 @@ export default function SellerDashboard() {
   const { user, profile } = useAuth();
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [announcement, setAnnouncement] = useState<any>(null);
 
   useEffect(() => {
     if (user?.uid) {
@@ -26,6 +30,13 @@ export default function SellerDashboard() {
         setProducts(res);
         setLoading(false);
       });
+
+      // Fetch global broadcast alert
+      getDoc(doc(db, "settings", "seller_broadcast")).then(docSnap => {
+        if (docSnap.exists() && docSnap.data().isActive) {
+          setAnnouncement(docSnap.data());
+        }
+      }).catch(err => console.error("Error fetching mobile broadcast announcement:", err));
     }
   }, [user?.uid]);
 
@@ -48,12 +59,26 @@ export default function SellerDashboard() {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-
+ 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Header Stats */}
         <View className="px-6 mt-8">
           <Text className="text-[10px] font-black text-gray-400 uppercase tracking-[3px] mb-2">{profile?.storeName || 'My Store'}</Text>
           <Text className="text-3xl font-black text-gray-900 uppercase tracking-tighter mb-6">Overview</Text>
+
+          {/* Announcement Alert Banner */}
+          {announcement && (
+            <View className="bg-red-50 border border-red-100 p-5 rounded-[24px] mb-6 flex-row items-start">
+              <View className="bg-red-500 p-2.5 rounded-xl mr-3 shadow-md shadow-red-200">
+                <LucideAlertCircle size={18} color="#fff" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-[8px] font-black text-red-600 uppercase tracking-wider mb-1">Global System Update</Text>
+                <Text className="text-xs font-black text-gray-900 uppercase tracking-tight leading-tight mb-1">{announcement.title}</Text>
+                <Text className="text-[10px] text-gray-600 font-semibold leading-relaxed">{announcement.message}</Text>
+              </View>
+            </View>
+          )}
 
           <View className="flex-row gap-4">
             <View className="flex-1 bg-primary/10 p-5 rounded-3xl border border-primary/20">

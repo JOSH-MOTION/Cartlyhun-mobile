@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { doc, updateDoc, setDoc } from 'firebase/firestore';
+import { doc, updateDoc, setDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'expo-router';
@@ -64,6 +64,29 @@ export default function StoreSetupScreen() {
         updatedAt: timestamp,
         storeViews: 0,
       }, { merge: true });
+
+      // Update all products belonging to this seller
+      const productsQuery = query(collection(db, 'products'), where('sellerId', '==', user.uid));
+      const productsSnap = await getDocs(productsQuery);
+      const productPromises = productsSnap.docs.map((docSnap) => 
+        updateDoc(docSnap.ref, {
+          sellerName: form.storeName,
+          sellerPhone: form.contactPhone,
+          region: form.region,
+          location: form.location
+        })
+      );
+
+      // Update all reviews referencing this seller
+      const reviewsQuery = query(collection(db, 'reviews'), where('sellerId', '==', user.uid));
+      const reviewsSnap = await getDocs(reviewsQuery);
+      const reviewPromises = reviewsSnap.docs.map((docSnap) =>
+        updateDoc(docSnap.ref, {
+          sellerName: form.storeName
+        })
+      );
+
+      await Promise.all([...productPromises, ...reviewPromises]);
       
       Alert.alert(
         'Store Created!', 
