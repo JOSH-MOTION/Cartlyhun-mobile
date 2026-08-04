@@ -14,7 +14,7 @@
     "splash": {
       "image": "./assets/images/logo-transparent.png",
       "resizeMode": "contain",
-      "backgroundColor": "#2563eb"
+      "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": [
       "**/*"

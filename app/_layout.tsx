@@ -96,6 +96,7 @@ function RootLayoutNav() {
           <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
           <Stack.Screen name="chat/[id]" options={{ headerShown: false }} />
           <Stack.Screen name="store-setup" options={{ headerShown: false }} />
+          <Stack.Screen name="seller" options={{ headerShown: false }} />
           <Stack.Screen name="account/profile" options={{ headerShown: false }} />
           <Stack.Screen name="account/settings" options={{ headerShown: false }} />
           <Stack.Screen name="account/orders" options={{ headerShown: false }} />
