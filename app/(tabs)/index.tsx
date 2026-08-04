@@ -72,6 +72,8 @@ import { useColorScheme } from 'nativewind';
 import useWishlist from '@/store/useWishlist';
 import { useAuth } from '@/hooks/useAuth';
 import { categories as APP_CATEGORIES } from '@/utils/categories';
+import { resolveListPricing } from '@/utils/pricing';
+import Price from '@/components/Price';
 import { Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -406,9 +408,9 @@ export default function HomeScreen() {
               <Text className="text-[13px] font-bold text-gray-900 mb-0.5" numberOfLines={1}>
                 {item.name}
               </Text>
-              <Text className="text-primary font-black text-[13px] mb-1.5">
-                ₵{item.basePrice || item.price}
-              </Text>
+              <View className="mb-1.5">
+                <Price pricing={resolveListPricing(item)} size="sm" showBadge={false} />
+              </View>
               
               <View className="flex-row items-center">
                 <LucideMapPin size={10} color="#94a3b8" />

@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
+import { resolveListPricing } from '@/utils/pricing';
+import Price from '@/components/Price';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import useWishlist from '@/store/useWishlist';
@@ -107,7 +109,7 @@ export default function WishlistScreen() {
                 <Text className="text-lg font-black text-gray-900 mb-1 tracking-tight uppercase" numberOfLines={1}>
                   {item.name}
                 </Text>
-                <Text className="text-primary font-black text-sm">₵{Number(item.basePrice || item.price).toLocaleString()}</Text>
+                <Price pricing={resolveListPricing(item)} size="sm" />
                 
                 <View className="flex-row items-center mt-3">
                    <View className="bg-gray-50 px-3 py-1 rounded-full flex-row items-center">

@@ -6,6 +6,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { getProducts, getSeller, incrementProductViews } from '@/utils/firebaseData';
 import { getTimeAgo, getTimeOnPlatform } from '@/utils/helpers';
+import { resolveListPricing } from '@/utils/pricing';
+import Price from '@/components/Price';
 import { 
   LucideChevronLeft, 
   LucideShoppingBag, 
@@ -86,7 +88,8 @@ export default function ProductDetailScreen() {
     );
   }
 
-  const price = product.basePrice || product.price;
+  const pricing = resolveListPricing(product);
+  const price = pricing.price;
 
   const handleWhatsAppOrder = () => {
     const text = `Hi, I want to order from CartlyHub:\nProduct: ${product.name}\nPrice: GH₵${price}\nID: ${product.id}`;
@@ -192,7 +195,7 @@ export default function ProductDetailScreen() {
               </Text>
             </View>
             <View className="bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100">
-              <Text className="text-2xl font-black text-primary">₵{price}</Text>
+              <Price pricing={pricing} size="lg" />
             </View>
           </View>
 
@@ -354,7 +357,7 @@ export default function ProductDetailScreen() {
                   >
                     <Image source={{ uri: item.images?.[0] }} className="w-40 h-48 rounded-[24px] mb-2 bg-gray-50" />
                     <Text className="font-black text-gray-900 text-sm uppercase tracking-tight" numberOfLines={1}>{item.name}</Text>
-                    <Text className="text-primary font-black text-xs">₵{item.basePrice || item.price}</Text>
+                    <Price pricing={resolveListPricing(item)} size="sm" showBadge={false} />
                   </TouchableOpacity>
                 )}
               />

@@ -6,6 +6,8 @@ import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { useUpload } from '@/utils/useUpload';
 import { createProduct } from '@/utils/firebaseData';
+import { normaliseDiscount } from '@/utils/pricing';
+import DiscountHint from '@/components/DiscountHint';
 import { categories } from '@/utils/categories';
 import { 
   LucidePlus, 
@@ -35,6 +37,7 @@ export default function SellScreen() {
     categoryId: "",
     subcategoryId: "",
     basePrice: "",
+    discountPrice: "",
     totalStock: "10",
     images: [] as string[],
     region: profile?.region || "Greater Accra",
@@ -114,10 +117,16 @@ export default function SellScreen() {
       const selectedSub = selectedCat?.subcategories?.find((s: any) => s.id === form.subcategoryId);
       const categoryNameText = selectedCat && selectedSub ? `${selectedCat.name} > ${selectedSub.name}` : (selectedCat?.name || "");
 
+      // A discount is stored as a lower `price` plus a `compareAtPrice` holding
+      // the original, so the checkout keeps charging from `price` unchanged.
+      const { discountPrice: _discountEntry, ...formFields } = form;
+      const priced = normaliseDiscount(form.basePrice, form.discountPrice);
+
       await createProduct({
-        ...form,
-        basePrice: Number(form.basePrice),
-        costPrice: Number(form.basePrice), // Using basePrice as costPrice since we removed it
+        ...formFields,
+        basePrice: priced.price,
+        compareAtPrice: priced.compareAtPrice,
+        costPrice: priced.price, // Using basePrice as costPrice since we removed it
         totalStock: Number(form.totalStock),
         category: selectedCat?.name || "",
         category_name: categoryNameText,
@@ -126,7 +135,8 @@ export default function SellScreen() {
           size: "Standard",
           color: "Standard",
           stock: Number(form.totalStock) || 10,
-          price: Number(form.basePrice) || 0,
+          price: priced.price,
+          compareAtPrice: priced.compareAtPrice,
           sku: `${form.name.substring(0, 3).replace(/\s/g, "").toUpperCase()}-STD`,
           hexColor: ""
         }],
@@ -259,6 +269,21 @@ export default function SellScreen() {
                 value={form.basePrice}
                 onChangeText={(text) => setForm({ ...form, basePrice: text })}
               />
+            </View>
+
+            <View className="mt-4">
+              <Text className="text-[10px] font-black text-gray-500 uppercase mb-2 ml-1">
+                Discount Price (optional)
+              </Text>
+              <TextInput
+                className="bg-white p-4 rounded-2xl font-black text-gray-900 text-lg border border-gray-200"
+                placeholder="Leave blank for no discount"
+                placeholderTextColor="#94a3b8"
+                keyboardType="numeric"
+                value={form.discountPrice}
+                onChangeText={(text) => setForm({ ...form, discountPrice: text })}
+              />
+              <DiscountHint original={form.basePrice} discount={form.discountPrice} />
             </View>
           </View>
         </View>
