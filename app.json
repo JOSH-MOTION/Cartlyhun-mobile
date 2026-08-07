@@ -10,7 +10,6 @@
     "newArchEnabled": true,
     "primaryColor": "#fa8929",
     "description": "Cartlyhubgh — Ghana's premier mobile marketplace. Buy and sell fashion, electronics, vehicles, food, services and more.",
-    "privacy": "public",
     "splash": {
       "image": "./assets/images/logo-transparent.png",
       "resizeMode": "contain",
