@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl, ScrollView, Animated, Modal, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { useProducts } from '@/hooks/useProducts';
 import { useRouter } from 'expo-router';
 import { db } from '@/lib/firebase';
@@ -205,6 +206,10 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-white">
+      {/* The header behind the clock and battery is brand blue, so the app-wide
+          dark icons set in _layout were unreadable here. */}
+      <StatusBar style="light" backgroundColor="#2563eb" translucent={false} />
+
       <SafeAreaView edges={['top']} className="bg-primary rounded-b-[40px] relative overflow-hidden pb-4">
         {/* Background Decorative Circles */}
         <View className="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full" />

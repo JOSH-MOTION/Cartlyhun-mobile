@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, StyleSheet, FlatList, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import { getProducts, getSeller, incrementProductViews } from '@/utils/firebaseData';
@@ -127,6 +128,10 @@ export default function ProductDetailScreen() {
 
   return (
     <View className="flex-1 bg-white">
+      {/* The header floats over the product photo, so the clock and battery sit
+          on the image itself — light icons read on any picture, dark ones did not. */}
+      <StatusBar style="light" translucent backgroundColor="transparent" />
+
       {/* Custom Floating Header */}
       <SafeAreaView className="absolute top-0 left-0 right-0 z-10">
         <View className="px-6 py-2 flex-row justify-between items-center">

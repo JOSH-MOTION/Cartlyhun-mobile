@@ -44,6 +44,20 @@ export function useGoogleAuth() {
 
     try {
       await GoogleSignin.hasPlayServices();
+
+      // Google reuses the cached account and skips the picker entirely when a
+      // session is still active, so anyone with several accounts on the phone
+      // gets silently signed into whichever they used last. Clearing the local
+      // session first forces the chooser to appear every time.
+      //
+      // This only signs out of the Google *client* — the Firebase session is
+      // untouched, and nothing is revoked, so the account stays connected.
+      try {
+        await GoogleSignin.signOut();
+      } catch {
+        // No previous session to clear; the picker will show anyway.
+      }
+
       const userInfo = await GoogleSignin.signIn();
       const idToken = userInfo.data?.idToken;
 
