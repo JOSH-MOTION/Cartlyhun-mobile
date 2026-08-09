@@ -22,38 +22,77 @@ export default function SignInScreen() {
   React.useEffect(() => {
     const checkBiometricPreference = async () => {
       const enabled = await AsyncStorage.getItem("biometrics-enabled") === "true";
+
+      // Older builds cached the account password here. Nothing reads it now,
+      // so clear it from any device that upgraded.
+      await SecureStore.deleteItemAsync("user-password").catch(() => {});
+
+      // Biometrics unlock the persisted Firebase session; there is no session
+      // to unlock if the user has never signed in on this device.
       const cachedEmail = await SecureStore.getItemAsync("user-email");
-      const cachedPassword = await SecureStore.getItemAsync("user-password");
-      if (enabled && cachedEmail && cachedPassword) {
+
+      if (enabled && cachedEmail) {
         setHasBiometricPreference(true);
-        // Automatically trigger biometric sign-in
-        handleBiometricSignIn(cachedEmail, cachedPassword);
+        handleBiometricSignIn();
       }
     };
     checkBiometricPreference();
   }, []);
 
-  const handleBiometricSignIn = async (cachedEmail?: string, cachedPassword?: string) => {
+  /**
+   * Biometrics unlock the Firebase session that is already persisted on this
+   * device — they are a local gate, not a second set of credentials.
+   *
+   * The previous version cached the account password in SecureStore and
+   * replayed it here. SecureStore is encrypted, but a stored password is a
+   * reusable secret: anyone who extracts it owns the account everywhere the
+   * user reused that password. A persisted session can simply be revoked.
+   */
+  const handleBiometricSignIn = async () => {
     try {
-      const mail = cachedEmail || await SecureStore.getItemAsync("user-email");
-      const pass = cachedPassword || await SecureStore.getItemAsync("user-password");
-      if (!mail || !pass) {
-        Alert.alert("Biometrics Setup", "Please log in manually with your email and password first to cache biometric credentials.");
+      // Prompting on a device with no sensor, or with nothing enrolled, just
+      // fails confusingly — check first and say something useful.
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      if (!hasHardware) {
+        Alert.alert("Not available", "This device has no fingerprint or face sensor.");
+        return;
+      }
+
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+      if (!isEnrolled) {
+        Alert.alert(
+          "No biometrics enrolled",
+          "Add a fingerprint or face unlock in your device settings, then try again.",
+        );
         return;
       }
 
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: "Sign in to CartlyHub",
-        fallbackLabel: "Use Password"
+        promptMessage: "Unlock CartlyHub",
+        fallbackLabel: "Use password",
       });
 
-      if (result.success) {
-        setLoading(true);
-        await signInWithEmailAndPassword(auth, mail, pass);
-        router.replace('/(tabs)');
+      if (!result.success) {
+        // Silent failure previously left the user staring at the form with no
+        // idea whether anything happened. Cancelling is deliberate, so stay quiet.
+        if (result.error && result.error !== "user_cancel" && result.error !== "system_cancel") {
+          Alert.alert("Unlock failed", "Sign in with your email and password instead.");
+        }
+        return;
       }
+
+      if (!auth.currentUser) {
+        Alert.alert(
+          "Session expired",
+          "Please sign in with your email and password once, then biometrics will work again.",
+        );
+        return;
+      }
+
+      router.replace('/(tabs)');
     } catch (error) {
       console.error("Biometric authentication error:", error);
+      Alert.alert("Unlock failed", "Sign in with your email and password instead.");
     } finally {
       setLoading(false);
     }
@@ -70,10 +109,11 @@ export default function SignInScreen() {
     try {
       await signInWithEmailAndPassword(auth, trimmedEmail, password);
       // Cache credentials if biometrics enabled
+      // Only the email is kept, to know which account biometrics unlock. The
+      // password is deliberately never stored — Firebase persists the session.
       const enabled = await AsyncStorage.getItem("biometrics-enabled") === "true";
       if (enabled) {
         await SecureStore.setItemAsync("user-email", trimmedEmail);
-        await SecureStore.setItemAsync("user-password", password);
       }
       // Replace so the user can't go back to sign-in screen
       router.replace('/(tabs)');

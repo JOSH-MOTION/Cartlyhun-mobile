@@ -106,7 +106,9 @@
           "cameraPermission": "Cartlyhubgh needs camera access to take product photos."
         }
       ],
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      "expo-font",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true

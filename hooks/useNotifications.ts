@@ -9,17 +9,39 @@ import { useAuth } from './useAuth';
 const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 const isAndroidExpoGo = isExpoGo && Platform.OS === 'android';
 
-// Conditionally require expo-notifications to avoid side-effects in Expo Go on Android
-const Notifications = !isAndroidExpoGo ? require('expo-notifications') : null;
+// Conditionally require expo-notifications to avoid side-effects in Expo Go on Android.
+//
+// Both the require and the handler registration run at import time, i.e. during
+// app startup before anything renders. An exception here takes the whole app
+// down on the splash screen with no error surface, so neither is allowed to
+// throw — push notifications degrade to "off" rather than bricking the app.
+let Notifications: any = null;
+
+if (!isAndroidExpoGo) {
+  try {
+    Notifications = require('expo-notifications');
+  } catch (error) {
+    console.error('expo-notifications unavailable; push disabled.', error);
+    Notifications = null;
+  }
+}
 
 if (Notifications) {
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: true,
-    }),
-  });
+  try {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        // shouldShowBanner/shouldShowList replaced shouldShowAlert, which is
+        // deprecated. The newer two are required, so omitting them left the
+        // handler malformed.
+        shouldShowBanner: true,
+        shouldShowList: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+      }),
+    });
+  } catch (error) {
+    console.error('Could not register the notification handler.', error);
+  }
 }
 
 export function useNotifications() {
