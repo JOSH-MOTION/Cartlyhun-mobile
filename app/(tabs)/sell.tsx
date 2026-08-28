@@ -9,17 +9,35 @@ import { createProduct } from '@/utils/firebaseData';
 import { normaliseDiscount } from '@/utils/pricing';
 import DiscountHint from '@/components/DiscountHint';
 import { categories } from '@/utils/categories';
-import { 
-  LucidePlus, 
-  LucideTrash2, 
-  LucideImage as LucideImageIcon, 
-  LucideCheckCircle2, 
-  LucideInfo, 
+import {
+  LucidePlus,
+  LucideTrash2,
+  LucideImage as LucideImageIcon,
+  LucideCheckCircle2,
+  LucideInfo,
   LucideChevronDown,
   LucideStore,
   LucideX,
-  LucideChevronRight
+  LucideChevronRight,
+  LucideSparkles,
 } from 'lucide-react-native';
+
+// Kept in sync with the CONDITION / GENDER attribute options in
+// utils/categories.js — those aren't exported, and there's no UI for these
+// two fields yet, so this is the only place their valid values live.
+const CONDITION_OPTIONS = ["Brand New", "Foreign Used", "Locally Used", "Refurbished"];
+const GENDER_OPTIONS = ["Men", "Women", "Unisex", "Boys", "Girls"];
+
+// Flattened once at module load — the auto-fill endpoint needs a compact
+// (categoryId, subcategoryId) list to pick from, not the full attribute tree.
+const AUTOFILL_CATEGORIES = categories.flatMap((cat) =>
+  (cat.subcategories || []).map((sub: any) => ({
+    categoryId: cat.id,
+    categoryName: cat.name,
+    subcategoryId: sub.id,
+    subcategoryName: sub.name,
+  }))
+);
 
 export default function SellScreen() {
   const { user, profile } = useAuth();
@@ -27,7 +45,8 @@ export default function SellScreen() {
   const [upload] = useUpload();
   const [loading, setLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  
+  const [autoFilling, setAutoFilling] = useState(false);
+
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [selectedCategoryTemp, setSelectedCategoryTemp] = useState<any>(null);
 
@@ -86,6 +105,7 @@ export default function SellScreen() {
       allowsMultipleSelection: true,
       selectionLimit: 4,
       quality: 0.7,
+      base64: true,
     });
 
     if (!result.canceled) {
@@ -93,7 +113,8 @@ export default function SellScreen() {
       try {
         const uploadedUrls = [];
         for (const asset of result.assets) {
-          const res = await upload({ base64: asset.base64 || asset.uri });
+          if (!asset.base64) continue;
+          const res = await upload({ base64: `data:${asset.mimeType || 'image/jpeg'};base64,${asset.base64}` });
           if (res.url) uploadedUrls.push(res.url);
         }
         setForm(prev => ({ ...prev, images: [...prev.images, ...uploadedUrls] }));
@@ -102,6 +123,48 @@ export default function SellScreen() {
       } finally {
         setIsUploading(false);
       }
+    }
+  };
+
+  const handleAutoFill = async () => {
+    if (form.images.length === 0) {
+      Alert.alert("Add a photo first", "Upload at least one product photo, then auto-fill can read it.");
+      return;
+    }
+
+    setAutoFilling(true);
+    try {
+      const res = await fetch(`${process.env.EXPO_PUBLIC_SITE_URL}/api/ai/autofill-product`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          imageUrls: form.images,
+          categories: AUTOFILL_CATEGORIES,
+          genders: GENDER_OPTIONS,
+          conditions: CONDITION_OPTIONS,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.result) {
+        Alert.alert("Auto-fill failed", data.error || "Please fill in the details manually.");
+        return;
+      }
+
+      const r = data.result;
+      setForm(prev => ({
+        ...prev,
+        name: prev.name || r.name || prev.name,
+        description: prev.description || r.description || prev.description,
+        categoryId: prev.categoryId || r.categoryId || prev.categoryId,
+        subcategoryId: prev.subcategoryId || r.subcategoryId || prev.subcategoryId,
+        brand: r.brand || prev.brand,
+        gender: r.gender || prev.gender,
+        condition: r.condition || prev.condition,
+      }));
+    } catch (error) {
+      Alert.alert("Auto-fill failed", "Couldn't reach the AI service. Please fill in the details manually.");
+    } finally {
+      setAutoFilling(false);
     }
   };
 
@@ -209,6 +272,23 @@ export default function SellScreen() {
               </TouchableOpacity>
             )}
           </View>
+
+          {form.images.length > 0 && (
+            <TouchableOpacity
+              onPress={handleAutoFill}
+              disabled={autoFilling}
+              className="mt-4 h-14 rounded-2xl items-center justify-center flex-row border border-primary bg-primary/5 disabled:opacity-60"
+            >
+              {autoFilling ? (
+                <ActivityIndicator color="#2563eb" size="small" />
+              ) : (
+                <>
+                  <LucideSparkles size={16} color="#2563eb" />
+                  <Text className="text-primary font-black uppercase tracking-widest ml-2 text-xs">Use AI to Generate Product Info</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Basic Info */}

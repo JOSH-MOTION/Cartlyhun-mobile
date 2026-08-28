@@ -20,9 +20,9 @@ import {
 } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { auth } from '@/lib/firebase';
+import { clearBiometricSession } from '@/lib/biometrics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as LocalAuthentication from 'expo-local-authentication';
-import * as SecureStore from 'expo-secure-store';
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -64,9 +64,7 @@ export default function SettingsScreen() {
       }
     } else {
       setFaceId(false);
-      await AsyncStorage.removeItem("biometrics-enabled");
-      await SecureStore.deleteItemAsync("user-email");
-      await SecureStore.deleteItemAsync("user-password");
+      await clearBiometricSession();
       Alert.alert("Disabled", "Biometric Authentication has been disabled and cached credentials removed.");
     }
   };
@@ -77,7 +75,7 @@ export default function SettingsScreen() {
       "Are you sure you want to sign out?",
       [
         { text: "Cancel", style: "cancel" },
-        { text: "Sign Out", style: "destructive", onPress: () => auth.signOut() }
+        { text: "Sign Out", style: "destructive", onPress: () => { clearBiometricSession(); auth.signOut(); } }
       ]
     );
   };

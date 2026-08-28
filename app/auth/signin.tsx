@@ -81,6 +81,9 @@ export default function SignInScreen() {
         return;
       }
 
+      // A deep link straight into this screen can beat AsyncStorage-backed
+      // session rehydration to this check; wait for it to settle first.
+      await auth.authStateReady();
       if (!auth.currentUser) {
         Alert.alert(
           "Session expired",

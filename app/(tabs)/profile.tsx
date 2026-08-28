@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, ScrollView, ActivityIndicator, Dim
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
 import { auth } from '@/lib/firebase';
+import { clearBiometricSession } from '@/lib/biometrics';
 import { useRouter } from 'expo-router';
 import { 
   LucideUser, 
@@ -215,7 +216,7 @@ export default function ProfileScreen() {
 
         {/* Sign Out */}
         <TouchableOpacity 
-          onPress={() => auth.signOut()}
+          onPress={() => { clearBiometricSession(); auth.signOut(); }}
           className="mx-6 mt-10 mb-20 flex-row items-center justify-center p-7 border-2 border-dashed border-gray-100 rounded-[40px]"
         >
           <LucideLogOut size={20} color="#94a3b8" />

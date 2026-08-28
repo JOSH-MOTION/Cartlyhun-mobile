@@ -3,7 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
-import { getUserOrders } from '@/utils/firebaseData';
+import { getCustomerOrders } from '@/utils/marketplaceData';
 import { LucideChevronLeft, LucideBox, LucideChevronRight } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
@@ -13,7 +13,7 @@ export default function OrdersScreen() {
 
   const { data: orders, isLoading } = useQuery({
     queryKey: ['orders', user?.uid],
-    queryFn: () => getUserOrders(user?.uid),
+    queryFn: () => getCustomerOrders(user?.uid),
     enabled: !!user?.uid,
   });
 
