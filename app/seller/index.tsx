@@ -15,6 +15,7 @@ import {
   LucideSettings,
   LucideShieldCheck,
   LucideShieldAlert,
+  LucideEye,
   LucideChevronRight,
   LucidePlus,
 } from 'lucide-react-native';
@@ -121,6 +122,12 @@ export default function SellerHome() {
                 </Text>
               </>
             )}
+            <View className="flex-row items-center gap-1 ml-2">
+              <LucideEye size={12} color="#9ca3af" />
+              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                {profile.storeViews || 0} store views
+              </Text>
+            </View>
           </View>
           <Text className="text-2xl font-black text-white uppercase tracking-tight mt-2">
             {profile.storeName || 'Vendor account'}
