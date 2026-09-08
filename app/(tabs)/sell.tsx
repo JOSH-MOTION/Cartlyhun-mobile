@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert, Modal, FlatList } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Image, ActivityIndicator, Alert, Modal, FlatList, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'expo-router';
@@ -64,6 +64,9 @@ export default function SellScreen() {
     brand: "",
     gender: "",
     condition: "Brand New",
+    isPreOrder: false,
+    preOrderNote: "",
+    tagsInput: "",
     sellerId: user?.uid,
     sellerName: profile?.storeName || profile?.name,
     sellerPhone: profile?.contactPhone || "",
@@ -173,6 +176,10 @@ export default function SellScreen() {
       Alert.alert("Missing Fields", "Please add a name, category, price, and at least one image.");
       return;
     }
+    if (form.isPreOrder && !form.preOrderNote.trim()) {
+      Alert.alert("Pre-order note needed", "Tell buyers when to expect this — e.g. \"Ships in 2-3 weeks\".");
+      return;
+    }
 
     setLoading(true);
     try {
@@ -182,11 +189,14 @@ export default function SellScreen() {
 
       // A discount is stored as a lower `price` plus a `compareAtPrice` holding
       // the original, so the checkout keeps charging from `price` unchanged.
-      const { discountPrice: _discountEntry, ...formFields } = form;
+      const { discountPrice: _discountEntry, tagsInput: _tagsInput, preOrderNote, ...formFields } = form;
       const priced = normaliseDiscount(form.basePrice, form.discountPrice);
+      const tags = (form.tagsInput || "").split(",").map((t) => t.trim()).filter(Boolean);
 
       await createProduct({
         ...formFields,
+        preOrderNote: form.isPreOrder ? preOrderNote.trim() : "",
+        tags,
         basePrice: priced.price,
         compareAtPrice: priced.compareAtPrice,
         costPrice: priced.price, // Using basePrice as costPrice since we removed it
@@ -365,6 +375,53 @@ export default function SellScreen() {
               />
               <DiscountHint original={form.basePrice} discount={form.discountPrice} />
             </View>
+          </View>
+        </View>
+
+        {/* Pre-order */}
+        <View className="px-6 mt-8">
+          <Text className="text-[10px] font-black text-gray-500 uppercase tracking-[2px] mb-4 ml-2">Pre-order</Text>
+          <View className="bg-amber-50 p-6 rounded-[32px] border border-amber-100 shadow-sm">
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1 pr-4">
+                <Text className="font-black text-gray-900">This is a pre-order</Text>
+                <Text className="text-xs text-gray-500 font-medium mt-1">
+                  No stock needed — buyers can order even at 0 stock, and see when to expect it.
+                </Text>
+              </View>
+              <Switch
+                value={form.isPreOrder}
+                onValueChange={(value) => setForm({ ...form, isPreOrder: value })}
+                trackColor={{ false: "#e2e8f0", true: "#fa8929" }}
+                thumbColor="#ffffff"
+              />
+            </View>
+            {form.isPreOrder && (
+              <TextInput
+                className="bg-white p-4 rounded-2xl font-bold text-gray-900 border border-amber-200 mt-4"
+                placeholder="e.g. Ships in 2-3 weeks after order"
+                placeholderTextColor="#94a3b8"
+                value={form.preOrderNote}
+                onChangeText={(text) => setForm({ ...form, preOrderNote: text })}
+              />
+            )}
+          </View>
+        </View>
+
+        {/* Tags */}
+        <View className="px-6 mt-8">
+          <Text className="text-[10px] font-black text-gray-500 uppercase tracking-[2px] mb-4 ml-2">Search Tags</Text>
+          <View className="bg-gray-50 p-6 rounded-[32px] border border-gray-100 shadow-sm">
+            <TextInput
+              className="bg-white p-4 rounded-2xl font-bold text-gray-900 border border-gray-100"
+              placeholder="e.g. leather, jacket, vintage"
+              placeholderTextColor="#94a3b8"
+              value={form.tagsInput}
+              onChangeText={(text) => setForm({ ...form, tagsInput: text })}
+            />
+            <Text className="text-[10px] text-gray-400 font-semibold mt-2 ml-1">
+              Comma-separated — helps buyers searching for something specific find you faster.
+            </Text>
           </View>
         </View>
       </ScrollView>

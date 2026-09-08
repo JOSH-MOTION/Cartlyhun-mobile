@@ -198,11 +198,24 @@ export default function ProductDetailScreen() {
               <Text className="text-3xl font-black text-gray-900 leading-tight uppercase tracking-tighter">
                 {product.name}
               </Text>
+              {product.isPreOrder && (
+                <View className="flex-row mt-2">
+                  <View className="bg-amber-500 px-3 py-1 rounded-full">
+                    <Text className="text-white text-[9px] font-black uppercase tracking-wide">Pre-order</Text>
+                  </View>
+                </View>
+              )}
             </View>
             <View className="bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100">
               <Price pricing={pricing} size="lg" />
             </View>
           </View>
+
+          {product.isPreOrder && product.preOrderNote ? (
+            <View className="bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3 mb-6">
+              <Text className="text-amber-900 text-xs font-bold leading-relaxed">{product.preOrderNote}</Text>
+            </View>
+          ) : null}
 
           {/* Stats Bar */}
           <View className="flex-row items-center gap-4 mb-8 border-b border-gray-100 pb-6">

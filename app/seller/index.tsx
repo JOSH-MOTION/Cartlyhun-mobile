@@ -18,6 +18,8 @@ import {
   LucideEye,
   LucideChevronRight,
   LucidePlus,
+  LucideRadio,
+  LucideTicket,
 } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { apiFetch } from '@/lib/api';
@@ -42,6 +44,8 @@ const SECTIONS = [
   { name: 'Customers', icon: LucideUsers, href: '/seller/customers' },
   { name: 'Wallet', icon: LucideWallet, href: '/seller/wallet' },
   { name: 'Withdrawals', icon: LucideBanknote, href: '/seller/withdrawals' },
+  { name: 'Status', icon: LucideRadio, href: '/seller/status' },
+  { name: 'Coupons', icon: LucideTicket, href: '/seller/coupons' },
   { name: 'Notifications', icon: LucideBell, href: '/seller/notifications' },
   { name: 'Reviews', icon: LucideStar, href: '/seller/reviews' },
   { name: 'Analytics', icon: LucideBarChart3, href: '/seller/analytics' },

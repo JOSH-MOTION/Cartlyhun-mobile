@@ -103,11 +103,12 @@ export default function SellerProducts() {
                   <Text className="text-[11px] text-gray-400 mt-0.5">
                     {formatCurrency(product.basePrice || product.price || 0)}
                   </Text>
-                  <View className="mt-1.5">
+                  <View className="mt-1.5 flex-row gap-1.5">
                     <Pill
                       tone={product.isActive !== false ? 'positive' : 'neutral'}
                       label={product.isActive !== false ? 'Active' : 'Inactive'}
                     />
+                    {product.isPreOrder && <Pill tone="warning" label="Pre-order" />}
                   </View>
                 </View>
 

@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, ActivityIndicator, StyleSheet, RefreshControl, ScrollView, Animated, Modal, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import MarketplaceStatusBar from '@/components/StatusBar';
 import { useProducts } from '@/hooks/useProducts';
 import { useRouter } from 'expo-router';
 import { db } from '@/lib/firebase';
@@ -185,10 +186,13 @@ export default function HomeScreen() {
       filtered = filtered.filter(p => p.categoryId === activeCategory || p.category === activeCategory);
     }
     if (searchQuery) {
-      filtered = filtered.filter(p => 
-        p.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.categoryId?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.category?.toLowerCase().includes(searchQuery.toLowerCase())
+      const needle = searchQuery.toLowerCase();
+      filtered = filtered.filter(p =>
+        p.name?.toLowerCase().includes(needle) ||
+        p.categoryId?.toLowerCase().includes(needle) ||
+        p.category?.toLowerCase().includes(needle) ||
+        p.description?.toLowerCase().includes(needle) ||
+        (p.tags || []).some((tag: string) => tag.toLowerCase().includes(needle))
       );
     }
     return filtered;
@@ -297,6 +301,9 @@ export default function HomeScreen() {
         columnWrapperStyle={{ paddingHorizontal: 16, justifyContent: 'space-between' }}
         ListHeaderComponent={() => (
           <View>
+            {/* Status bar — ephemeral 24h seller updates */}
+            <MarketplaceStatusBar />
+
             {/* Special Offers Section */}
             {promotion && promotion.isActive && (
               <View className="px-6 mb-8">
@@ -401,12 +408,17 @@ export default function HomeScreen() {
                 onPress={() => toggleWishlist(item.id)}
                 className="absolute top-2.5 right-2.5 p-2 bg-white/90 rounded-full"
               >
-                <LucideHeart 
-                  size={14} 
-                  color={isInWishlist(item.id) ? '#fa8929' : '#000'} 
-                  fill={isInWishlist(item.id) ? '#fa8929' : 'transparent'} 
+                <LucideHeart
+                  size={14}
+                  color={isInWishlist(item.id) ? '#fa8929' : '#000'}
+                  fill={isInWishlist(item.id) ? '#fa8929' : 'transparent'}
                 />
               </TouchableOpacity>
+              {item.isPreOrder && (
+                <View className="absolute top-2.5 left-2.5 bg-amber-500 px-2 py-1 rounded-full">
+                  <Text className="text-white text-[8px] font-black uppercase tracking-wide">Pre-order</Text>
+                </View>
+              )}
             </View>
 
             <View className="p-3">

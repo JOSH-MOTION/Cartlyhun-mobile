@@ -45,7 +45,7 @@ function useUpload() {
         throw new Error("Upload failed");
       }
       const data = await response.json();
-      return { url: data.url, mimeType: data.mimeType || null };
+      return { url: data.url, publicId: data.publicId || null, mimeType: data.mimeType || null };
     } catch (uploadError) {
       if (uploadError instanceof Error) {
         return { error: uploadError.message };
