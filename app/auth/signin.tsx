@@ -208,9 +208,12 @@ export default function SignInScreen() {
                   }
                 </TouchableOpacity>
               </View>
+              <TouchableOpacity onPress={() => router.push('/auth/forgot-password')} className="self-end mt-2">
+                <Text className="text-xs font-bold text-gray-500">Forgot password?</Text>
+              </TouchableOpacity>
             </View>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={handleSignIn}
               disabled={loading}
               className={`h-16 rounded-2xl items-center justify-center flex-row shadow-lg mt-2 ${loading ? 'bg-primary/70' : 'bg-primary'}`}
