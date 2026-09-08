@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, StyleSheet, FlatList, Linking } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Dimensions, StyleSheet, FlatList, Linking, Modal, TextInput, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -32,6 +32,7 @@ import useWishlist from '@/store/useWishlist';
 import { useAuth } from '@/hooks/useAuth';
 import { chatService } from '@/services/chatService';
 import { categories } from '@/utils/categories';
+import { apiFetch } from '@/lib/api';
 
 const { width } = Dimensions.get('window');
 
@@ -43,6 +44,10 @@ export default function ProductDetailScreen() {
   const [activeImage, setActiveImage] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [orderName, setOrderName] = useState(profile?.name || user?.displayName || '');
+  const [orderPhone, setOrderPhone] = useState('');
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const getCategoryName = () => {
     if (!product) return "Uncategorized";
@@ -93,9 +98,34 @@ export default function ProductDetailScreen() {
   const price = pricing.price;
 
   const handleWhatsAppOrder = () => {
-    const text = `Hi, I want to order from CartlyHub:\nProduct: ${product.name}\nPrice: GH₵${price}\nID: ${product.id}`;
-    const phone = sellerInfo?.whatsappNumber || product.sellerPhone || "233242403450";
-    Linking.openURL(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`);
+    setOrderName(profile?.name || user?.displayName || '');
+    setOrderPhone('');
+    setShowOrderModal(true);
+  };
+
+  const handleConfirmOrder = async () => {
+    if (!orderName.trim() || !orderPhone.trim()) {
+      Alert.alert('Missing details', 'Please add your name and phone number so the seller can reach you.');
+      return;
+    }
+    setIsPlacingOrder(true);
+    try {
+      const result = await apiFetch<{ whatsappUrl: string }>('/api/checkout/whatsapp', {
+        method: 'POST',
+        body: {
+          items: [{ productId: product.id, quantity: 1 }],
+          vendorId: product.sellerId,
+          customer: { name: orderName.trim(), phone: orderPhone.trim(), email: user?.email || null },
+          delivery: {},
+        },
+      });
+      setShowOrderModal(false);
+      Linking.openURL(result.whatsappUrl);
+    } catch (error: any) {
+      Alert.alert('Could not place order', error.message || 'Something went wrong');
+    } finally {
+      setIsPlacingOrder(false);
+    }
   };
 
   const handleMessageSeller = async () => {
@@ -384,6 +414,57 @@ export default function ProductDetailScreen() {
         </View>
       </ScrollView>
 
+      <Modal visible={showOrderModal} animationType="slide" transparent onRequestClose={() => setShowOrderModal(false)}>
+        <KeyboardAvoidingView
+          className="flex-1 justify-end bg-black/50"
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <View className="bg-white rounded-t-[32px] p-6 pb-10">
+            <Text className="text-lg font-black text-gray-900 uppercase tracking-tight mb-1">Order via WhatsApp</Text>
+            <Text className="text-xs text-gray-400 font-medium mb-6">
+              This creates a real order with {product.sellerName || 'the seller'} before handing you to WhatsApp.
+            </Text>
+
+            <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Your name</Text>
+            <TextInput
+              value={orderName}
+              onChangeText={setOrderName}
+              placeholder="Full name"
+              placeholderTextColor="#94a3b8"
+              className="bg-gray-50 rounded-2xl px-4 py-3.5 text-sm font-bold text-gray-900 mb-4"
+            />
+
+            <Text className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Your phone</Text>
+            <TextInput
+              value={orderPhone}
+              onChangeText={setOrderPhone}
+              placeholder="e.g. 0244 000 000"
+              placeholderTextColor="#94a3b8"
+              keyboardType="phone-pad"
+              className="bg-gray-50 rounded-2xl px-4 py-3.5 text-sm font-bold text-gray-900 mb-6"
+            />
+
+            <TouchableOpacity
+              onPress={handleConfirmOrder}
+              disabled={isPlacingOrder}
+              className="bg-green-500 h-14 rounded-2xl items-center justify-center flex-row gap-2 disabled:opacity-60"
+            >
+              {isPlacingOrder ? (
+                <ActivityIndicator color="#ffffff" size="small" />
+              ) : (
+                <>
+                  <FontAwesome name="whatsapp" size={16} color="#ffffff" />
+                  <Text className="text-white font-black uppercase tracking-widest text-xs">Confirm order</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setShowOrderModal(false)} className="items-center py-4">
+              <Text className="text-gray-400 font-bold text-xs uppercase tracking-widest">Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </View>
   );
 }
