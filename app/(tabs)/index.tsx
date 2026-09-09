@@ -302,7 +302,9 @@ export default function HomeScreen() {
         ListHeaderComponent={() => (
           <View>
             {/* Status bar — ephemeral 24h seller updates */}
-            <MarketplaceStatusBar />
+            <View className="mt-3">
+              <MarketplaceStatusBar />
+            </View>
 
             {/* Special Offers Section */}
             {promotion && promotion.isActive && (
