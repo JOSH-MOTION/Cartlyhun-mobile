@@ -302,7 +302,7 @@ export default function HomeScreen() {
         ListHeaderComponent={() => (
           <View>
             {/* Status bar — ephemeral 24h seller updates */}
-            <View className="mt-3">
+            <View className="mt-6">
               <MarketplaceStatusBar />
             </View>
 
