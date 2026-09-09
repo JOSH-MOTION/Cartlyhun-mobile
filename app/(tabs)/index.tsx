@@ -212,7 +212,7 @@ export default function HomeScreen() {
     <View className="flex-1 bg-white">
       {/* The header behind the clock and battery is brand blue, so the app-wide
           dark icons set in _layout were unreadable here. */}
-      <StatusBar style="light" backgroundColor="#2563eb" translucent={false} />
+      <StatusBar style="light" />
 
       <SafeAreaView edges={['top']} className="bg-primary rounded-b-[40px] relative overflow-hidden pb-4">
         {/* Background Decorative Circles */}

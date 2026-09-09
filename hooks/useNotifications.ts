@@ -48,8 +48,8 @@ export function useNotifications() {
   const { user, profile } = useAuth();
   const [expoPushToken, setExpoPushToken] = useState('');
   const [notification, setNotification] = useState<any>(null);
-  const notificationListener = useRef<any>();
-  const responseListener = useRef<any>();
+  const notificationListener = useRef<any>(undefined);
+  const responseListener = useRef<any>(undefined);
 
   useEffect(() => {
     if (!user || isAndroidExpoGo || !Notifications) {

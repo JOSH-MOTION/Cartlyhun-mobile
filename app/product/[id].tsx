@@ -160,7 +160,7 @@ export default function ProductDetailScreen() {
     <View className="flex-1 bg-white">
       {/* The header floats over the product photo, so the clock and battery sit
           on the image itself — light icons read on any picture, dark ones did not. */}
-      <StatusBar style="light" translucent backgroundColor="transparent" />
+      <StatusBar style="light" />
 
       {/* Custom Floating Header */}
       <SafeAreaView className="absolute top-0 left-0 right-0 z-10">

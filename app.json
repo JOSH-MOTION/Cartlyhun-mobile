@@ -7,14 +7,8 @@
     "icon": "./assets/images/logo-padded.png",
     "scheme": "cartlyhubgh",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
     "primaryColor": "#fa8929",
     "description": "Cartlyhubgh — Ghana's premier mobile marketplace. Buy and sell fashion, electronics, vehicles, food, services and more.",
-    "splash": {
-      "image": "./assets/images/logo-transparent.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -37,7 +31,6 @@
       "icon": "./assets/images/logo-padded.png",
       "package": "com.cartlyhub.mobile",
       "versionCode": 1,
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "softwareKeyboardLayoutMode": "pan",
       "permissions": [
@@ -108,7 +101,17 @@
       ],
       "@react-native-google-signin/google-signin",
       "expo-font",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/logo-transparent.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      "expo-status-bar",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

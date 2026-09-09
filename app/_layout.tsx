@@ -86,7 +86,7 @@ function RootLayoutNav() {
 
   return (
     <View className="flex-1 bg-white">
-      <StatusBar style="dark" backgroundColor="#ffffff" translucent={false} />
+      <StatusBar style="dark" />
       <ThemeProvider value={DefaultTheme}>
         <Stack screenOptions={{ headerShown: false, animation: 'fade' }}>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
