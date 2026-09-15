@@ -22,7 +22,7 @@
         "EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "eccomerce",
         "EXPO_PUBLIC_SITE_URL": "https://cartlyhubgh.com",
         "EXPO_PUBLIC_IOS_CLIENT_ID": "875954381628-jaoi3i47d9v9g7mpo2dihgpnpjg84ipb.apps.googleusercontent.com",
-        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "875954381628-urvjvsornjv4tv6t7vldvb1j6uslo4c8.apps.googleusercontent.com",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "875954381628-ei1iouu6gn18qfgk4f4v8t33lpia9n3j.apps.googleusercontent.com",
         "EXPO_PUBLIC_WEB_CLIENT_ID": "875954381628-6204mne3pjp5l51cdag7fr4u2qcm37pn.apps.googleusercontent.com"
       },
       "channel": "development"
@@ -46,7 +46,7 @@
         "EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "eccomerce",
         "EXPO_PUBLIC_SITE_URL": "https://cartlyhubgh.com",
         "EXPO_PUBLIC_IOS_CLIENT_ID": "875954381628-jaoi3i47d9v9g7mpo2dihgpnpjg84ipb.apps.googleusercontent.com",
-        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "875954381628-urvjvsornjv4tv6t7vldvb1j6uslo4c8.apps.googleusercontent.com",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "875954381628-ei1iouu6gn18qfgk4f4v8t33lpia9n3j.apps.googleusercontent.com",
         "EXPO_PUBLIC_WEB_CLIENT_ID": "875954381628-6204mne3pjp5l51cdag7fr4u2qcm37pn.apps.googleusercontent.com"
       },
       "channel": "preview"
@@ -72,7 +72,7 @@
         "EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET": "eccomerce",
         "EXPO_PUBLIC_SITE_URL": "https://cartlyhubgh.com",
         "EXPO_PUBLIC_IOS_CLIENT_ID": "875954381628-jaoi3i47d9v9g7mpo2dihgpnpjg84ipb.apps.googleusercontent.com",
-        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "875954381628-urvjvsornjv4tv6t7vldvb1j6uslo4c8.apps.googleusercontent.com",
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "875954381628-ei1iouu6gn18qfgk4f4v8t33lpia9n3j.apps.googleusercontent.com",
         "EXPO_PUBLIC_WEB_CLIENT_ID": "875954381628-6204mne3pjp5l51cdag7fr4u2qcm37pn.apps.googleusercontent.com"
       },
       "channel": "production"
