@@ -8,7 +8,7 @@
     "scheme": "cartlyhubgh",
     "userInterfaceStyle": "light",
     "primaryColor": "#fa8929",
-    "description": "Cartlyhubgh — Ghana's premier mobile marketplace. Buy and sell fashion, electronics, vehicles, food, services and more.",
+    "description": "Cartlyhubgh \u2014 Ghana's premier mobile marketplace. Buy and sell fashion, electronics, vehicles, food, services and more.",
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -45,7 +45,8 @@
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.VIBRATE",
         "android.permission.USE_FINGERPRINT",
-        "android.permission.USE_BIOMETRIC"
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.RECORD_AUDIO"
       ],
       "intentFilters": [
         {
@@ -122,6 +123,12 @@
       "eas": {
         "projectId": "81e3e752-7f46-4497-b0ba-1910c52d19c2"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/81e3e752-7f46-4497-b0ba-1910c52d19c2"
     }
   }
 }
