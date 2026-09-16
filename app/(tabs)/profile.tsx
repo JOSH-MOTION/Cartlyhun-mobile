@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { auth } from '@/lib/firebase';
 import { clearBiometricSession } from '@/lib/biometrics';
 import { useRouter } from 'expo-router';
+import { subscribeToNotifications } from '@/utils/marketplaceData';
 import { 
   LucideUser, 
   LucideMail, 
@@ -27,6 +28,14 @@ const { width } = Dimensions.get('window');
 export default function ProfileScreen() {
   const { user, profile, loading } = useAuth();
   const router = useRouter();
+  const [unreadAlerts, setUnreadAlerts] = React.useState(0);
+
+  React.useEffect(() => {
+    if (!user?.uid) return undefined;
+    return subscribeToNotifications(user.uid, (items) =>
+      setUnreadAlerts(items.filter((n) => !n.read).length)
+    );
+  }, [user?.uid]);
 
   if (loading) {
     return (
@@ -136,15 +145,19 @@ export default function ProfileScreen() {
         {/* Stats Row */}
         <View className="px-6 mt-8 flex-row gap-4">
           {[
-            { label: 'Saved', value: '14', icon: LucideHeart, color: '#ef4444' },
-            { label: 'Orders', value: '02', icon: LucidePackage, color: '#3b82f6' },
-            { label: 'Alerts', value: '05', icon: LucideBell, color: '#f59e0b' }
+            { label: 'Saved', value: '14', icon: LucideHeart, color: '#ef4444', route: '/(tabs)/wishlist' },
+            { label: 'Orders', value: '02', icon: LucidePackage, color: '#3b82f6', route: '/account/orders' },
+            { label: 'Alerts', value: String(unreadAlerts).padStart(2, '0'), icon: LucideBell, color: '#f59e0b', route: '/account/notifications' }
           ].map((stat, idx) => (
-            <View key={idx} className="flex-1 bg-white p-5 rounded-[32px] border border-gray-100 shadow-sm items-center">
+            <TouchableOpacity
+              key={idx}
+              onPress={() => router.push(stat.route as any)}
+              className="flex-1 bg-white p-5 rounded-[32px] border border-gray-100 shadow-sm items-center"
+            >
               <stat.icon size={16} color={stat.color} />
               <Text className="text-xl font-black text-gray-900 mb-0.5 mt-2">{stat.value}</Text>
               <Text className="text-[8px] font-black text-gray-400 uppercase tracking-widest">{stat.label}</Text>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
 
@@ -156,12 +169,13 @@ export default function ProfileScreen() {
               { label: 'My Conversations', sub: 'Chat history with sellers', icon: LucideMail, color: '#3b82f6', route: '/(tabs)/messages' },
               { label: 'Favorite Items', sub: 'Manage your saved products', icon: LucideHeart, color: '#ef4444', route: '/(tabs)/wishlist' },
               { label: 'Order History', sub: 'Track your current purchases', icon: LucideShoppingBag, color: '#fa8929', route: '/account/orders' },
+              { label: 'Notifications', sub: 'Order updates and messages', icon: LucideBell, color: '#f59e0b', route: '/account/notifications' },
               { label: 'Security & Auth', sub: 'Passwords and biometric login', icon: LucideShield, color: '#10b981', route: '/account/settings' }
-            ].map((item, idx) => (
-              <TouchableOpacity 
+            ].map((item, idx, arr) => (
+              <TouchableOpacity
                 key={idx}
                 onPress={() => router.push(item.route as any)}
-                className={`flex-row items-center p-6 ${idx !== 3 ? 'border-b border-gray-50' : ''}`}
+                className={`flex-row items-center p-6 ${idx !== arr.length - 1 ? 'border-b border-gray-50' : ''}`}
               >
                 <View style={{ backgroundColor: `${item.color}15` }} className="p-3.5 rounded-2xl mr-5">
                   <item.icon size={20} color={item.color} />

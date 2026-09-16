@@ -17,7 +17,6 @@ try {
 
   GoogleSignin.configure({
     webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
     scopes: ['profile', 'email'],
   });
 
@@ -59,6 +58,11 @@ export function useGoogleAuth() {
       }
 
       const userInfo = await GoogleSignin.signIn();
+
+      if (userInfo.type !== 'success') {
+        return;
+      }
+
       const idToken = userInfo.data?.idToken;
 
       if (!idToken) {
