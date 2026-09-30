@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, TouchableOpacity, RefreshControl } from 'react-native';
+import { View, Text, TouchableOpacity, RefreshControl, Share } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -20,6 +20,7 @@ import {
   LucidePlus,
   LucideRadio,
   LucideTicket,
+  LucideShare2,
 } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 import { apiFetch } from '@/lib/api';
@@ -93,6 +94,22 @@ export default function SellerHome() {
   const walletData: any = wallet.data?.wallet;
   const sellingOption = SELLING_MODE_OPTIONS.find((o) => o.value === profile.sellingMode);
 
+  const handleShareStore = async () => {
+    if (!profile.storeName) return;
+    const siteUrl = process.env.EXPO_PUBLIC_SITE_URL || 'https://cartlyhubgh.com';
+    const storeUrl = `${siteUrl}/store/${encodeURIComponent(profile.storeName)}`;
+    const shareMessage = `👋 Hi! Check out my official store, *${profile.storeName}*, on Cartly Hub. Explore our latest items, great deals, and place your order securely with fast delivery: ${storeUrl}`;
+    try {
+      await Share.share({
+        message: shareMessage,
+        url: storeUrl,
+        title: `${profile.storeName} on Cartly Hub`,
+      });
+    } catch {
+      // Ignore
+    }
+  };
+
   return (
     <View className="flex-1 bg-surface">
       <ScreenHeader
@@ -110,28 +127,40 @@ export default function SellerHome() {
       >
         {/* Store status */}
         <View className="bg-gray-900 rounded-2xl p-5">
-          <View className="flex-row items-center gap-2">
-            {profile.isVerified ? (
-              <>
-                <LucideShieldCheck size={13} color="#6ee7b7" />
-                <Text className="text-[10px] font-bold uppercase tracking-widest text-emerald-300">
-                  Verified merchant
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center gap-2">
+              {profile.isVerified ? (
+                <>
+                  <LucideShieldCheck size={13} color="#6ee7b7" />
+                  <Text className="text-[10px] font-bold uppercase tracking-widest text-emerald-300">
+                    Verified merchant
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <LucideShieldAlert size={13} color="#fbbf24" />
+                  <Text className="text-[10px] font-bold uppercase tracking-widest text-amber-300">
+                    Verification pending
+                  </Text>
+                </>
+              )}
+              <View className="flex-row items-center gap-1 ml-2">
+                <LucideEye size={12} color="#9ca3af" />
+                <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                  {profile.storeViews || 0} views
                 </Text>
-              </>
-            ) : (
-              <>
-                <LucideShieldAlert size={13} color="#fbbf24" />
-                <Text className="text-[10px] font-bold uppercase tracking-widest text-amber-300">
-                  Verification pending
-                </Text>
-              </>
-            )}
-            <View className="flex-row items-center gap-1 ml-2">
-              <LucideEye size={12} color="#9ca3af" />
-              <Text className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                {profile.storeViews || 0} store views
-              </Text>
+              </View>
             </View>
+
+            {profile.storeName ? (
+              <TouchableOpacity
+                onPress={handleShareStore}
+                className="bg-white/10 px-3 py-1.5 rounded-full flex-row items-center gap-1.5 active:bg-white/20"
+              >
+                <LucideShare2 size={12} color="#ffffff" />
+                <Text className="text-[10px] font-bold text-white uppercase tracking-wider">Share</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
           <Text className="text-2xl font-black text-white uppercase tracking-tight mt-2">
             {profile.storeName || 'Vendor account'}
