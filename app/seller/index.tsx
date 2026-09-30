@@ -27,6 +27,7 @@ import { apiFetch } from '@/lib/api';
 import { getVendorOrders } from '@/utils/marketplaceData';
 import { getSeller } from '@/utils/firebaseData';
 import { formatCurrency, PAYMENT_STATUS, SELLING_MODE_OPTIONS } from '@/constants/marketplace';
+import { createStoreSlug } from '@/utils/helpers';
 import {
   ScreenHeader,
   Screen,
@@ -97,7 +98,8 @@ export default function SellerHome() {
   const handleShareStore = async () => {
     if (!profile.storeName) return;
     const siteUrl = process.env.EXPO_PUBLIC_SITE_URL || 'https://cartlyhubgh.com';
-    const storeUrl = `${siteUrl}/store/${encodeURIComponent(profile.storeName)}`;
+    const storeSlug = profile.storeSlug || createStoreSlug(profile.storeName);
+    const storeUrl = `${siteUrl}/store/${encodeURIComponent(storeSlug)}`;
     const shareMessage = `👋 Hi! Check out my official store, *${profile.storeName}*, on Cartly Hub. Explore our latest items, great deals, and place your order securely with fast delivery: ${storeUrl}`;
     try {
       await Share.share({

@@ -75,3 +75,21 @@ export const getTimeAgo = (date) => {
   
   return start.toLocaleDateString('en-GH', { day: 'numeric', month: 'short' });
 };
+
+/**
+ * Generates a clean URL slug from a store name.
+ * e.g., "Josh's boutique" -> "joshs-boutique"
+ *       "Kofi & Sons Electronics" -> "kofi-sons-electronics"
+ * @param {string} name
+ * @returns {string}
+ */
+export const createStoreSlug = (name = "") => {
+  if (!name || typeof name !== "string") return "";
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/['’]/g, "") // remove apostrophes
+    .replace(/[^a-z0-9]+/g, "-") // replace non-alphanumeric chars with hyphens
+    .replace(/^-+|-+$/g, ""); // strip leading/trailing hyphens
+};
+

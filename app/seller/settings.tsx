@@ -11,6 +11,7 @@ import { apiFetch } from '@/lib/api';
 import { useUpload } from '@/utils/useUpload';
 import { SELLING_MODES } from '@/constants/marketplace';
 import SellingPreferences from '@/components/seller/SellingPreferences';
+import { createStoreSlug } from '@/utils/helpers';
 import {
   ScreenHeader,
   Screen,
@@ -91,6 +92,7 @@ export default function SellerSettings() {
     try {
       await updateDoc(doc(db, 'sellers', user!.uid), {
         ...form,
+        storeSlug: createStoreSlug(form.storeName),
         updatedAt: Timestamp.now(),
       });
       await refetch();
